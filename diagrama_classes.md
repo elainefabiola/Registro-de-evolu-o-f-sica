@@ -5,38 +5,6 @@
 ```mermaid
 classDiagram
     %% ===== CAMADA MODEL (MODELOS) =====
-    class Usuario {
-        +int id
-        +String nome
-        +String email
-        +String senha
-        +String tipoUsuario
-        +Date dataCadastro
-        +boolean ativo
-    }
-
-    class Aluno {
-        +int id
-        +String nome
-        +Date dataNascimento
-        +String genero
-        +String telefone
-        +String email
-        +Date dataCadastro
-        +boolean ativo
-    }
-
-    class Profissional {
-        +int id
-        +String nome
-        +String especialidade
-        +String cref
-        +String telefone
-        +String email
-        +Date dataCadastro
-        +boolean ativo
-    }
-
     class AvaliacaoFisica {
         +int id
         +int alunoId
@@ -106,26 +74,8 @@ classDiagram
         +buscarAvaliacao()
         +atualizarAvaliacao()
         +excluirAvaliacao()
-        +listarAvaliacoesPorAluno()
+        +listarAvaliacoes()
         +validarDadosAvaliacao()
-    }
-
-    class AlunoController {
-        +cadastrarAluno()
-        +buscarAluno()
-        +atualizarAluno()
-        +excluirAluno()
-        +listarAlunos()
-        +getHistoricoAvaliacoes()
-    }
-
-    class ProfissionalController {
-        +cadastrarProfissional()
-        +buscarProfissional()
-        +atualizarProfissional()
-        +excluirProfissional()
-        +listarProfissionais()
-        +autenticarProfissional()
     }
 
     class RelatorioController {
@@ -135,13 +85,6 @@ classDiagram
         +calcularEstatisticas()
     }
 
-    class UsuarioController {
-        +autenticarUsuario()
-        +validarPermissao()
-        +alterarSenha()
-        +recuperarSenha()
-    }
-
     %% ===== CAMADA VIEW (INTERFACES) =====
     class AvaliacaoView {
         +exibirFormularioAvaliacao()
@@ -149,20 +92,6 @@ classDiagram
         +exibirListaAvaliacoes()
         +exibirMensagemSucesso()
         +exibirMensagemErro()
-    }
-
-    class AlunoView {
-        +exibirFormularioCadastro()
-        +exibirDadosAluno()
-        +exibirListaAlunos()
-        +exibirHistoricoAvaliacoes()
-    }
-
-    class ProfissionalView {
-        +exibirFormularioCadastro()
-        +exibirDadosProfissional()
-        +exibirListaProfissionais()
-        +exibirTelaLogin()
     }
 
     class RelatorioView {
@@ -212,17 +141,10 @@ classDiagram
     %% ===== RELACIONAMENTOS MVC =====
     
     %% Relacionamentos Model (Entidades)
-    Usuario <|-- Aluno
-    Usuario <|-- Profissional
-    
-    Aluno "1" --> "*" AvaliacaoFisica : possui
-    Profissional "1" --> "*" AvaliacaoFisica : realiza
-    
     AvaliacaoFisica "1" --> "1" Circunferencias : contém
     AvaliacaoFisica "1" --> "1" ComposicaoCorporal : contém
     
     AvaliacaoFisica "1" --> "*" RelatorioEvolucao : gera
-    Profissional "1" --> "*" RelatorioEvolucao : cria
     
     ComparacaoMedidas --> AvaliacaoFisica : compara atual
     ComparacaoMedidas --> AvaliacaoFisica : compara anterior
@@ -232,12 +154,8 @@ classDiagram
     AvaliacaoController --> Circunferencias : manipula
     AvaliacaoController --> ComposicaoCorporal : manipula
     
-    AlunoController --> Aluno : gerencia
-    ProfissionalController --> Profissional : gerencia
     RelatorioController --> RelatorioEvolucao : gerencia
     RelatorioController --> ComparacaoMedidas : manipula
-    
-    UsuarioController --> Usuario : gerencia
     
     %% Relacionamentos Controller -> Service
     AvaliacaoController --> AvaliacaoService : utiliza
@@ -247,10 +165,9 @@ classDiagram
     
     %% Relacionamentos View -> Controller
     AvaliacaoView --> AvaliacaoController : comunica
-    AlunoView --> AlunoController : comunica
-    ProfissionalView --> ProfissionalController : comunica
     RelatorioView --> RelatorioController : comunica
-    DashboardView --> UsuarioController : comunica
+    DashboardView --> AvaliacaoController : comunica
+    DashboardView --> RelatorioController : comunica
     
     %% Relacionamentos Service -> Model
     AvaliacaoService ..> AvaliacaoFisica : processa
@@ -276,9 +193,6 @@ classDiagram
 Representa os dados e a lógica de negócio do sistema.
 
 #### **Entidades Principais:**
-- **Usuario**: Classe base para todos os usuários do sistema
-- **Aluno**: Representa os alunos da academia
-- **Profissional**: Representa instrutores e profissionais
 - **AvaliacaoFisica**: Entidade central que contém todas as medidas de uma avaliação
 - **Circunferencias**: Armazena medidas de circunferência corporal
 - **ComposicaoCorporal**: Armazena dados de peso, altura e composição corporal
@@ -290,18 +204,13 @@ Gerencia a lógica de controle e coordenação entre Model e View.
 
 #### **Controladores:**
 - **AvaliacaoController**: Gerencia operações de avaliação física
-- **AlunoController**: Gerencia operações relacionadas aos alunos
-- **ProfissionalController**: Gerencia operações dos profissionais
 - **RelatorioController**: Gerencia geração e manipulação de relatórios
-- **UsuarioController**: Gerencia autenticação e permissões
 
 ### **CAMADA VIEW (INTERFACES)**
 Responsável pela apresentação dos dados ao usuário.
 
 #### **Views:**
 - **AvaliacaoView**: Interface para formulários e exibição de avaliações
-- **AlunoView**: Interface para cadastro e visualização de alunos
-- **ProfissionalView**: Interface para profissionais e login
 - **RelatorioView**: Interface para visualização de relatórios
 - **DashboardView**: Interface principal do sistema
 
@@ -334,7 +243,6 @@ Classes de apoio que fornecem funcionalidades específicas.
 - **Controller**: Coordena a comunicação entre Model e View
 
 ### **Padrões Adicionais:**
-- **Herança**: Usuario como classe base para Aluno e Profissional
 - **Composição**: AvaliacaoFisica composta por Circunferencias e ComposicaoCorporal
 - **Service Layer**: Serviços especializados para cálculos e validações
 - **Dependency Injection**: Controllers utilizam Services para operações específicas
