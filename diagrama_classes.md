@@ -1,4 +1,4 @@
-# Diagrama de Classes - Sistema de Registro de Circunferências Corporais (Arquitetura MVC)
+# Diagrama de Classes - Sistema de Registro de evolucao fisica (Arquitetura MVC)
 
 ## Diagrama de Classes - Arquitetura MVC
 
@@ -241,16 +241,3 @@ Classes de apoio que fornecem funcionalidades específicas.
 - **Model**: Gerencia dados e lógica de negócio
 - **View**: Responsável pela apresentação e interface do usuário
 - **Controller**: Coordena a comunicação entre Model e View
-
-### **Padrões Adicionais:**
-- **Composição**: AvaliacaoFisica composta por Circunferencias e ComposicaoCorporal
-- **Service Layer**: Serviços especializados para cálculos e validações
-- **Dependency Injection**: Controllers utilizam Services para operações específicas
-- **Single Responsibility**: Cada classe tem uma única responsabilidade bem definida
-
-### **Benefícios da Arquitetura MVC:**
-- **Manutenibilidade**: Código organizado e fácil de manter
-- **Testabilidade**: Cada camada pode ser testada independentemente
-- **Escalabilidade**: Fácil adição de novas funcionalidades
-- **Reutilização**: Services podem ser reutilizados por diferentes Controllers
-- **Flexibilidade**: Views podem ser alteradas sem afetar a lógica de negócio
