@@ -6,41 +6,15 @@
 classDiagram
     %% Entidades Principais
     class Usuario {
-        +int id
-        +String nome
-        +String email
-        +String senha
-        +String tipoUsuario
-        +Date dataCadastro
-        +boolean ativo
-        +autenticar()
-        +validarPermissao()
+       
     }
 
     class Aluno {
-        +int id
-        +String nome
-        +Date dataNascimento
-        +String genero
-        +String telefone
-        +String email
-        +Date dataCadastro
-        +boolean ativo
-        +getHistoricoAvaliacoes()
-        +solicitarAvaliacao()
+      
     }
 
     class Profissional {
-        +int id
-        +String nome
-        +String especialidade
-        +String cref
-        +String telefone
-        +String email
-        +Date dataCadastro
-        +boolean ativo
-        +registrarAvaliacao()
-        +gerarRelatorio()
+        
     }
 
     class AvaliacaoFisica {
@@ -146,20 +120,20 @@ classDiagram
     }
 
     %% Relacionamentos
-    Usuario <|-- Aluno : herança
-    Usuario <|-- Profissional : herança
+    Usuario <|-- Aluno
+    Usuario <|-- Profissional
     
-    Aluno ||--o{ AvaliacaoFisica : possui
-    Profissional ||--o{ AvaliacaoFisica : realiza
+    Aluno "1" --> "*" AvaliacaoFisica : possui
+    Profissional "1" --> "*" AvaliacaoFisica : realiza
     
-    AvaliacaoFisica ||--|| Circunferencias : contém
-    AvaliacaoFisica ||--|| ComposicaoCorporal : contém
+    AvaliacaoFisica "1" --> "1" Circunferencias : contém
+    AvaliacaoFisica "1" --> "1" ComposicaoCorporal : contém
     
-    AvaliacaoFisica ||--o{ RelatorioEvolucao : gera
-    Profissional ||--o{ RelatorioEvolucao : cria
+    AvaliacaoFisica "1" --> "*" RelatorioEvolucao : gera
+    Profissional "1" --> "*" RelatorioEvolucao : cria
     
-    ComparacaoMedidas }o--|| AvaliacaoFisica : compara atual
-    ComparacaoMedidas }o--|| AvaliacaoFisica : compara anterior
+    ComparacaoMedidas --> AvaliacaoFisica : compara atual
+    ComparacaoMedidas --> AvaliacaoFisica : compara anterior
     
     ValidadorMedidas ..> Circunferencias : valida
     ValidadorMedidas ..> ComposicaoCorporal : valida
