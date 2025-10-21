@@ -123,118 +123,6 @@ classDiagram
     note for SistemaController "Controla todo o<br/>sistema MVC"
 ```
 
-## Tipos de Relacionamentos no Diagrama
-
-### 🔗 **COMPOSIÇÃO (Composição - *--)**
-- **Símbolo**: `*--` (losango preenchido)
-- **Significado**: Relacionamento forte - "É COMPOSTO POR" ou "TEM-UM"
-- **Exemplo**: `AvaliacaoFisica *-- MedidasCorporais`
-- **Características**:
-  - Se a AvaliacaoFisica for excluída, as MedidasCorporais também são excluídas
-  - As MedidasCorporais não podem existir sem a AvaliacaoFisica
-  - Relacionamento de dependência forte
-
-### 🔄 **AGREGAÇÃO (Agregação - o--)**
-- **Símbolo**: `o--` (losango vazio)
-- **Significado**: Relacionamento médio - "CONTÉM" ou "TEM-UM"
-- **Exemplo**: `SistemaController o-- CalculadoraIMC`
-- **Características**:
-  - O SistemaController CONTÉM a CalculadoraIMC
-  - Se o SistemaController for excluído, a CalculadoraIMC pode continuar existindo
-  - Relacionamento de dependência média
-
-### ↔️ **ASSOCIAÇÃO (Associação - -->)**
-- **Símbolo**: `-->` (seta simples)
-- **Significado**: Relacionamento fraco - "USA" ou "GERENCIA"
-- **Exemplo**: `SistemaController --> AvaliacaoFisica`
-- **Características**:
-  - As classes podem existir independentemente
-  - Relacionamento temporário ou de uso
-  - Uma classe usa a outra, mas não depende dela para existir
-
-### 📋 **DEPENDÊNCIA (Dependência - ..>)**
-- **Símbolo**: `..>` (seta tracejada)
-- **Significado**: Relacionamento muito fraco - "DEPENDE DE"
-- **Exemplo**: `CalculadoraIMC ..> MedidasCorporais`
-- **Características**:
-  - Uma classe precisa da outra para funcionar
-  - Relacionamento temporário durante execução
-  - Não há propriedade ou posse
-
-## Exemplos Práticos dos Relacionamentos
-
-### 🏠 **Analogia com uma Casa**
-
-#### **COMPOSIÇÃO** (Casa *-- Quarto)
-- Uma casa É COMPOSTA POR quartos
-- Se a casa for demolida, os quartos também são destruídos
-- Os quartos não podem existir sem a casa
-
-#### **AGREGAÇÃO** (Casa o-- Móveis)
-- Uma casa CONTÉM móveis (mesa, cadeira, sofá)
-- Se a casa for demolida, os móveis podem ser movidos para outra casa
-- Os móveis podem existir independentemente da casa
-
-#### **ASSOCIAÇÃO** (Pessoa --> Casa)
-- Uma pessoa USA uma casa (morar, alugar)
-- A pessoa e a casa podem existir independentemente
-- A pessoa pode mudar de casa, a casa pode ter outros moradores
-
-#### **DEPENDÊNCIA** (Eletricista ..> Casa)
-- Um eletricista DEPENDE da casa para trabalhar
-- É um relacionamento temporário
-- O eletricista não possui a casa, apenas trabalha nela
-
-### 💻 **No Nosso Sistema**
-
-#### **COMPOSIÇÃO**: `AvaliacaoFisica *-- MedidasCorporais`
-- Uma avaliação física É COMPOSTA POR medidas corporais
-- Se excluir a avaliação, as medidas também são excluídas
-- As medidas não existem sem a avaliação
-
-#### **AGREGAÇÃO**: `SistemaController o-- CalculadoraIMC`
-- O SistemaController CONTÉM a CalculadoraIMC
-- Se excluir o SistemaController, a CalculadoraIMC pode ser reutilizada
-- A CalculadoraIMC pode existir independentemente
-
-#### **ASSOCIAÇÃO**: `SistemaController --> AvaliacaoFisica`
-- O controller GERENCIA as avaliações
-- Controller e avaliação podem existir independentemente
-- O controller pode gerenciar outras coisas também
-
-#### **DEPENDÊNCIA**: `CalculadoraIMC ..> MedidasCorporais`
-- A calculadora DEPENDE das medidas para calcular o IMC
-- É um relacionamento temporário durante o cálculo
-- A calculadora não possui as medidas, apenas as usa
-
-## 🔍 Diferença entre Composição e Agregação
-
-### **COMPOSIÇÃO vs AGREGAÇÃO**
-
-| Aspecto | Composição (*--) | Agregação (o--) |
-|---------|------------------|-----------------|
-| **Força** | Relacionamento forte | Relacionamento médio |
-| **Propriedade** | "É COMPOSTO POR" | "CONTÉM" |
-| **Vida útil** | Mesma vida útil | Vida útil independente |
-| **Exclusão** | Se excluir o todo, exclui as partes | Se excluir o todo, as partes podem sobreviver |
-| **Símbolo** | Losango preenchido | Losango vazio |
-
-### **🎯 Quando Usar Cada Uma?**
-
-#### **Use COMPOSIÇÃO quando:**
-- As partes não podem existir sem o todo
-- Se excluir o todo, as partes também devem ser excluídas
-- Exemplo: Casa *-- Quarto (quarto não existe sem casa)
-
-#### **Use AGREGAÇÃO quando:**
-- As partes podem existir independentemente
-- Se excluir o todo, as partes podem ser reutilizadas
-- Exemplo: Casa o-- Móveis (móveis podem ser movidos)
-
-### **💡 Dica para Iniciantes:**
-- **Composição**: "Não posso viver sem você"
-- **Agregação**: "Posso viver sem você, mas prefiro ter você"
-
 ## Arquitetura MVC - Descrição das Camadas
 
 ### **CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS)**
@@ -278,3 +166,24 @@ São as telas que o usuário vê e usa:
 10. **TelaRelatorio** solicita relatório ao **SistemaController**
 11. **SistemaController** gera relatório baseado nos dados salvos
 
+### 💻 **No Nosso Sistema**
+
+#### **COMPOSIÇÃO**: `AvaliacaoFisica *-- MedidasCorporais`
+- Uma avaliação física É COMPOSTA POR medidas corporais
+- Se excluir a avaliação, as medidas também são excluídas
+- As medidas não existem sem a avaliação
+
+#### **AGREGAÇÃO**: `SistemaController o-- CalculadoraIMC`
+- O SistemaController CONTÉM a CalculadoraIMC
+- Se excluir o SistemaController, a CalculadoraIMC pode ser reutilizada
+- A CalculadoraIMC pode existir independentemente
+
+#### **ASSOCIAÇÃO**: `SistemaController --> AvaliacaoFisica`
+- O controller GERENCIA as avaliações
+- Controller e avaliação podem existir independentemente
+- O controller pode gerenciar outras coisas também
+
+#### **DEPENDÊNCIA**: `CalculadoraIMC ..> MedidasCorporais`
+- A calculadora DEPENDE das medidas para calcular o IMC
+- É um relacionamento temporário durante o cálculo
+- A calculadora não possui as medidas, apenas as usa
