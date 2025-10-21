@@ -1,15 +1,7 @@
-# Diagrama de Classes - Sistema de Avaliação Física (Versão Simplificada)
+# Diagrama de Classes - Sistema de Registro de evolucao fisica (Arquitetura MVC)
 
-## O que é um Diagrama de Classes?
+## Diagrama de Classes - Arquitetura MVC
 
-Um diagrama de classes é como um "mapa" que mostra:
-- **O que o sistema faz** (as funcionalidades)
-- **Como as partes se conectam** (os relacionamentos)
-- **Quais informações são armazenadas** (os dados)
-
-É como um projeto de uma casa antes de construí-la!
-
-## Diagrama de Classes Simplificado
 
 ```mermaid
 classDiagram
@@ -58,16 +50,17 @@ classDiagram
     %% ===== CONTROLE (CONTROLLER) =====
     %% Aqui ficam as operações principais
     
-    class AvaliacaoController {
+    class SistemaController {
         +criarAvaliacao()
         +buscarAvaliacao()
         +atualizarAvaliacao()
         +excluirAvaliacao()
-    }
-
-    class RelatorioController {
         +gerarRelatorio()
         +exportarPDF()
+        +inicializarSistema()
+        +autenticarUsuario()
+        +validarPermissoes()
+        +coordenarOperacoes()
     }
 
     %% ===== INTERFACE (VIEW) =====
@@ -84,29 +77,34 @@ classDiagram
         +exibirGraficos()
     }
 
-    %% ===== RELACIONAMENTOS SIMPLES =====
+    class TelaPrincipal {
+        +exibirMenu()
+        +exibirDashboard()
+        +exibirLogin()
+        +exibirNavegacao()
+    }
+
+    %% ===== RELACIONAMENTOS MVC =====
     
-    %% Uma avaliação tem medidas corporais
-    AvaliacaoFisica "tem" --> MedidasCorporais
+    %% Relacionamentos Model (Entidades)
+    AvaliacaoFisica "1" --> "1" MedidasCorporais : contém
+    AvaliacaoFisica "1" --> "*" Relatorio : gera
     
-    %% Uma avaliação gera relatórios
-    AvaliacaoFisica "gera" --> Relatorio
+    %% Relacionamentos Controller -> Model (Entidades + Services)
+    SistemaController --> AvaliacaoFisica : gerencia
+    SistemaController --> MedidasCorporais : manipula
+    SistemaController --> Relatorio : gerencia
+    SistemaController --> CalculadoraIMC : utiliza
+    SistemaController --> ValidadorDados : utiliza
     
-    %% O controller gerencia as avaliações
-    AvaliacaoController "gerencia" --> AvaliacaoFisica
-    AvaliacaoController "usa" --> CalculadoraIMC
-    AvaliacaoController "usa" --> ValidadorDados
+    %% Relacionamentos View -> Controller
+    TelaAvaliacao --> SistemaController : comunica
+    TelaRelatorio --> SistemaController : comunica
+    TelaPrincipal --> SistemaController : comunica
     
-    %% O controller gerencia os relatórios
-    RelatorioController "gerencia" --> Relatorio
-    
-    %% As telas se comunicam com os controllers
-    TelaAvaliacao "comunica" --> AvaliacaoController
-    TelaRelatorio "comunica" --> RelatorioController
-    
-    %% Os serviços trabalham com os dados
-    CalculadoraIMC "calcula" --> MedidasCorporais
-    ValidadorDados "valida" --> MedidasCorporais
+    %% Relacionamentos Service -> Model
+    CalculadoraIMC ..> MedidasCorporais : calcula
+    ValidadorDados ..> MedidasCorporais : valida
 
     %% Notas explicativas
     note for AvaliacaoFisica "Armazena informações<br/>básicas da avaliação"
@@ -115,10 +113,12 @@ classDiagram
     
     note for CalculadoraIMC "Faz os cálculos<br/>matemáticos"
     
-    note for AvaliacaoController "Coordena todas as<br/>operações de avaliação"
+    note for SistemaController "Controla todo o<br/>sistema MVC"
 ```
 
-## Explicação Simples das Partes do Sistema
+## Arquitetura MVC - Descrição das Camadas
+
+### **CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS)**
 
 ### 🗂️ **DADOS (Model)**
 São como "gavetas" onde guardamos as informações:
@@ -134,44 +134,28 @@ São como "calculadoras inteligentes" que fazem os cálculos:
 - **ValidadorDados**: Verifica se os dados estão corretos (peso não pode ser negativo, etc.)
 
 ### 🎮 **CONTROLE (Controller)**
-São como "gerentes" que coordenam tudo:
+É como um "gerente geral" que coordena tudo:
 
-- **AvaliacaoController**: Gerencia tudo relacionado às avaliações (criar, buscar, atualizar, excluir)
-- **RelatorioController**: Gerencia tudo relacionado aos relatórios (gerar, exportar)
+- **SistemaController**: Controla todo o sistema - avaliações, relatórios, autenticação e coordenação geral
 
 ### 🖥️ **INTERFACE (View)**
 São as telas que o usuário vê e usa:
 
 - **TelaAvaliacao**: Tela para preencher dados da avaliação
 - **TelaRelatorio**: Tela para ver relatórios e gráficos
+- **TelaPrincipal**: Tela principal com menu, dashboard e navegação
 
 ## Como Funciona na Prática?
 
-1. **Usuário** preenche dados na **TelaAvaliacao**
-2. **TelaAvaliacao** envia dados para o **AvaliacaoController**
-3. **AvaliacaoController** pede para o **ValidadorDados** verificar se está tudo certo
-4. **AvaliacaoController** pede para o **CalculadoraIMC** calcular o IMC
-5. **AvaliacaoController** salva os dados na **AvaliacaoFisica** e **MedidasCorporais**
-6. **AvaliacaoController** avisa a **TelaAvaliacao** que deu tudo certo
+1. **Usuário** acessa o sistema através da **TelaPrincipal**
+2. **TelaPrincipal** comunica com o **SistemaController** para autenticação
+3. **SistemaController** valida permissões e coordena acesso
+4. **Usuário** preenche dados na **TelaAvaliacao**
+5. **TelaAvaliacao** envia dados para o **SistemaController**
+6. **SistemaController** pede para o **ValidadorDados** verificar se está tudo certo
+7. **SistemaController** pede para o **CalculadoraIMC** calcular o IMC
+8. **SistemaController** salva os dados na **AvaliacaoFisica** e **MedidasCorporais**
+9. **SistemaController** avisa a **TelaAvaliacao** que deu tudo certo
+10. **TelaRelatorio** solicita relatório ao **SistemaController**
+11. **SistemaController** gera relatório baseado nos dados salvos
 
-## Analogia com uma Lanchonete
-
-- **DADOS** = Cardápio e pedidos (o que tem disponível e o que foi pedido)
-- **SERVICES** = Cozinha (fazem os lanches e verificam se tem ingredientes)
-- **CONTROLLER** = Garçom (recebe pedidos e coordena tudo)
-- **VIEW** = Mesa e cardápio (onde o cliente vê e escolhe)
-
-## Benefícios desta Organização
-
-✅ **Fácil de entender**: Cada parte tem uma função específica
-✅ **Fácil de modificar**: Se quiser mudar uma tela, não afeta o resto
-✅ **Fácil de testar**: Pode testar cada parte separadamente
-✅ **Fácil de expandir**: Pode adicionar novas funcionalidades sem quebrar o que já existe
-
-## Próximos Passos para Iniciantes
-
-1. **Entenda cada classe**: O que cada uma faz
-2. **Veja os relacionamentos**: Como elas se conectam
-3. **Pense em exemplos**: Como isso funcionaria na vida real
-4. **Comece simples**: Implemente uma classe por vez
-5. **Teste sempre**: Verifique se está funcionando antes de continuar
