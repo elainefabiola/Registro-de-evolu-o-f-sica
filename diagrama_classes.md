@@ -1,20 +1,40 @@
-# Diagrama de Classes - Sistema de Registro de Circunferências Corporais
+# Diagrama de Classes - Sistema de Registro de Circunferências Corporais (Arquitetura MVC)
 
-## Diagrama de Classes
+## Diagrama de Classes - Arquitetura MVC
 
 ```mermaid
 classDiagram
-    %% Entidades Principais
+    %% ===== CAMADA MODEL (MODELOS) =====
     class Usuario {
-       
+        +int id
+        +String nome
+        +String email
+        +String senha
+        +String tipoUsuario
+        +Date dataCadastro
+        +boolean ativo
     }
 
     class Aluno {
-      
+        +int id
+        +String nome
+        +Date dataNascimento
+        +String genero
+        +String telefone
+        +String email
+        +Date dataCadastro
+        +boolean ativo
     }
 
     class Profissional {
-        
+        +int id
+        +String nome
+        +String especialidade
+        +String cref
+        +String telefone
+        +String email
+        +Date dataCadastro
+        +boolean ativo
     }
 
     class AvaliacaoFisica {
@@ -26,12 +46,8 @@ classDiagram
         +boolean completa
         +Date dataCriacao
         +Date dataAtualizacao
-        +salvar()
-        +calcularIMC()
-        +classificarPercentualGordura()
     }
 
-    %% Medidas Corporais
     class Circunferencias {
         +int id
         +int avaliacaoId
@@ -50,8 +66,6 @@ classDiagram
         +float panturrilhaDireita
         +float panturrilhaEsquerda
         +float escapular
-        +validarMedidas()
-        +calcularVariacao()
     }
 
     class ComposicaoCorporal {
@@ -67,14 +81,8 @@ classDiagram
         +float imc
         +String classificacaoIMC
         +String classificacaoGordura
-        +calcularPesoGordura()
-        +calcularIMC()
-        +classificarIMC()
-        +classificarPercentualGordura()
-        +validarDados()
     }
 
-    %% Relatórios e Histórico
     class RelatorioEvolucao {
         +int id
         +int alunoId
@@ -82,9 +90,6 @@ classDiagram
         +Date dataGeracao
         +String formato
         +String caminhoArquivo
-        +gerarPDF()
-        +compararAvaliacoes()
-        +calcularEstatisticas()
     }
 
     class ComparacaoMedidas {
@@ -93,33 +98,120 @@ classDiagram
         +int avaliacaoAnteriorId
         +Map~String, Float~ variacoesAbsolutas
         +Map~String, Float~ variacoesPercentuais
-        +calcularVariacoes()
-        +gerarTabelaComparativa()
     }
 
-    %% Validações e Utilitários
-    class ValidadorMedidas {
+    %% ===== CAMADA CONTROLLER (CONTROLADORES) =====
+    class AvaliacaoController {
+        +registrarAvaliacao()
+        +buscarAvaliacao()
+        +atualizarAvaliacao()
+        +excluirAvaliacao()
+        +listarAvaliacoesPorAluno()
+        +validarDadosAvaliacao()
+    }
+
+    class AlunoController {
+        +cadastrarAluno()
+        +buscarAluno()
+        +atualizarAluno()
+        +excluirAluno()
+        +listarAlunos()
+        +getHistoricoAvaliacoes()
+    }
+
+    class ProfissionalController {
+        +cadastrarProfissional()
+        +buscarProfissional()
+        +atualizarProfissional()
+        +excluirProfissional()
+        +listarProfissionais()
+        +autenticarProfissional()
+    }
+
+    class RelatorioController {
+        +gerarRelatorioEvolucao()
+        +compararAvaliacoes()
+        +exportarPDF()
+        +calcularEstatisticas()
+    }
+
+    class UsuarioController {
+        +autenticarUsuario()
+        +validarPermissao()
+        +alterarSenha()
+        +recuperarSenha()
+    }
+
+    %% ===== CAMADA VIEW (INTERFACES) =====
+    class AvaliacaoView {
+        +exibirFormularioAvaliacao()
+        +exibirDadosAvaliacao()
+        +exibirListaAvaliacoes()
+        +exibirMensagemSucesso()
+        +exibirMensagemErro()
+    }
+
+    class AlunoView {
+        +exibirFormularioCadastro()
+        +exibirDadosAluno()
+        +exibirListaAlunos()
+        +exibirHistoricoAvaliacoes()
+    }
+
+    class ProfissionalView {
+        +exibirFormularioCadastro()
+        +exibirDadosProfissional()
+        +exibirListaProfissionais()
+        +exibirTelaLogin()
+    }
+
+    class RelatorioView {
+        +exibirRelatorioEvolucao()
+        +exibirComparacaoMedidas()
+        +exibirGraficosEvolucao()
+        +exibirOpcoesExportacao()
+    }
+
+    class DashboardView {
+        +exibirDashboardPrincipal()
+        +exibirEstatisticasGerais()
+        +exibirResumoAtividades()
+        +exibirMenuNavegacao()
+    }
+
+    %% ===== SERVIÇOS E UTILITÁRIOS =====
+    class AvaliacaoService {
+        +calcularIMC()
+        +classificarPercentualGordura()
+        +validarMedidas()
+        +calcularVariacoes()
+    }
+
+    class RelatorioService {
+        +gerarPDF()
+        +compararAvaliacoes()
+        +calcularEstatisticas()
+        +formatarDados()
+    }
+
+    class ValidadorService {
         +validarCircunferencias()
         +validarComposicaoCorporal()
         +validarPeso()
         +validarAltura()
         +validarPercentualGordura()
-        +validarFormatoNumerico()
     }
 
-    class CalculadoraIMC {
+    class CalculadoraService {
         +calcularIMC(peso, altura)
         +classificarIMC(imc)
         +getFaixasIMC()
+        +classificarPorGeneroIdade()
     }
 
-    class ClassificadorGordura {
-        +classificarPorGeneroIdade(percentual, genero, idade)
-        +getFaixasGordura()
-        +validarFaixaPercentual()
-    }
-
-    %% Relacionamentos
+    %% ===== RELACIONAMENTOS MVC =====
+    
+    %% Relacionamentos Model (Entidades)
     Usuario <|-- Aluno
     Usuario <|-- Profissional
     
@@ -135,11 +227,38 @@ classDiagram
     ComparacaoMedidas --> AvaliacaoFisica : compara atual
     ComparacaoMedidas --> AvaliacaoFisica : compara anterior
     
-    ValidadorMedidas ..> Circunferencias : valida
-    ValidadorMedidas ..> ComposicaoCorporal : valida
+    %% Relacionamentos Controller -> Model
+    AvaliacaoController --> AvaliacaoFisica : gerencia
+    AvaliacaoController --> Circunferencias : manipula
+    AvaliacaoController --> ComposicaoCorporal : manipula
     
-    CalculadoraIMC ..> ComposicaoCorporal : calcula
-    ClassificadorGordura ..> ComposicaoCorporal : classifica
+    AlunoController --> Aluno : gerencia
+    ProfissionalController --> Profissional : gerencia
+    RelatorioController --> RelatorioEvolucao : gerencia
+    RelatorioController --> ComparacaoMedidas : manipula
+    
+    UsuarioController --> Usuario : gerencia
+    
+    %% Relacionamentos Controller -> Service
+    AvaliacaoController --> AvaliacaoService : utiliza
+    RelatorioController --> RelatorioService : utiliza
+    AvaliacaoController --> ValidadorService : utiliza
+    AvaliacaoController --> CalculadoraService : utiliza
+    
+    %% Relacionamentos View -> Controller
+    AvaliacaoView --> AvaliacaoController : comunica
+    AlunoView --> AlunoController : comunica
+    ProfissionalView --> ProfissionalController : comunica
+    RelatorioView --> RelatorioController : comunica
+    DashboardView --> UsuarioController : comunica
+    
+    %% Relacionamentos Service -> Model
+    AvaliacaoService ..> AvaliacaoFisica : processa
+    AvaliacaoService ..> ComposicaoCorporal : calcula
+    RelatorioService ..> RelatorioEvolucao : gera
+    ValidadorService ..> Circunferencias : valida
+    ValidadorService ..> ComposicaoCorporal : valida
+    CalculadoraService ..> ComposicaoCorporal : calcula
 
     %% Notas e Observações
     note for AvaliacaoFisica "Campos opcionais permitidos<br/>Observações até 1000 caracteres<br/>Status: completa/parcial"
@@ -151,60 +270,49 @@ classDiagram
     note for RelatorioEvolucao "Mínimo 2 avaliações<br/>Exportação PDF<br/>Layout profissional"
 ```
 
-## Descrição das Classes Principais
+## Arquitetura MVC - Descrição das Camadas
 
-### **Usuario (Classe Base)**
-- Classe abstrata que representa qualquer usuário do sistema
-- Contém dados básicos de autenticação e perfil
-- Implementa métodos de autenticação e validação de permissões
+### **CAMADA MODEL (MODELOS)**
+Representa os dados e a lógica de negócio do sistema.
 
-### **Aluno**
-- Herda de Usuario
-- Representa os alunos da academia
-- Possui histórico de avaliações físicas
-- Pode solicitar novas avaliações
+#### **Entidades Principais:**
+- **Usuario**: Classe base para todos os usuários do sistema
+- **Aluno**: Representa os alunos da academia
+- **Profissional**: Representa instrutores e profissionais
+- **AvaliacaoFisica**: Entidade central que contém todas as medidas de uma avaliação
+- **Circunferencias**: Armazena medidas de circunferência corporal
+- **ComposicaoCorporal**: Armazena dados de peso, altura e composição corporal
+- **RelatorioEvolucao**: Representa relatórios gerados
+- **ComparacaoMedidas**: Armazena comparações entre avaliações
 
-### **Profissional**
-- Herda de Usuario
-- Representa instrutores e profissionais da academia
-- Pode registrar avaliações físicas
-- Pode gerar relatórios de evolução
+### **CAMADA CONTROLLER (CONTROLADORES)**
+Gerencia a lógica de controle e coordenação entre Model e View.
 
-### **AvaliacaoFisica**
-- Entidade central do sistema
-- Contém todas as medidas de uma avaliação
-- Suporta campos opcionais
-- Calcula automaticamente IMC e classificações
+#### **Controladores:**
+- **AvaliacaoController**: Gerencia operações de avaliação física
+- **AlunoController**: Gerencia operações relacionadas aos alunos
+- **ProfissionalController**: Gerencia operações dos profissionais
+- **RelatorioController**: Gerencia geração e manipulação de relatórios
+- **UsuarioController**: Gerencia autenticação e permissões
 
-### **Circunferencias**
-- Armazena todas as medidas de circunferência corporal
-- Valida formato numérico e faixas de valores
-- Calcula variações entre avaliações
+### **CAMADA VIEW (INTERFACES)**
+Responsável pela apresentação dos dados ao usuário.
 
-### **ComposicaoCorporal**
-- Armazena dados de peso, altura e composição corporal
-- Calcula automaticamente IMC e peso de gordura
-- Classifica percentual de gordura por faixas etárias
+#### **Views:**
+- **AvaliacaoView**: Interface para formulários e exibição de avaliações
+- **AlunoView**: Interface para cadastro e visualização de alunos
+- **ProfissionalView**: Interface para profissionais e login
+- **RelatorioView**: Interface para visualização de relatórios
+- **DashboardView**: Interface principal do sistema
 
-### **RelatorioEvolucao**
-- Gera relatórios em PDF
-- Compara avaliações temporais
-- Requer mínimo de 2 avaliações
+### **SERVIÇOS E UTILITÁRIOS**
+Classes de apoio que fornecem funcionalidades específicas.
 
-### **ValidadorMedidas**
-- Classe utilitária para validações
-- Valida formatos numéricos e faixas de valores
-- Garante integridade dos dados
-
-### **CalculadoraIMC**
-- Calcula IMC usando fórmula padrão
-- Classifica IMC em faixas da OMS
-- Retorna classificações padronizadas
-
-### **ClassificadorGordura**
-- Classifica percentual de gordura por gênero e idade
-- Implementa tabelas de referência
-- Valida faixas aceitáveis
+#### **Serviços:**
+- **AvaliacaoService**: Cálculos e validações de avaliação
+- **RelatorioService**: Geração e formatação de relatórios
+- **ValidadorService**: Validações de dados
+- **CalculadoraService**: Cálculos matemáticos e classificações
 
 ## Funcionalidades Implementadas
 
@@ -217,9 +325,24 @@ classDiagram
 ✅ **US16**: Geração de relatórios (AC31-AC33)
 ✅ **US11**: Comparação de medidas (AC34-AC36)
 
-## Padrões de Design Utilizados
+## Padrões de Design Utilizados na Arquitetura MVC
 
+### **Padrão MVC (Model-View-Controller)**
+- **Separação de Responsabilidades**: Cada camada tem uma responsabilidade específica
+- **Model**: Gerencia dados e lógica de negócio
+- **View**: Responsável pela apresentação e interface do usuário
+- **Controller**: Coordena a comunicação entre Model e View
+
+### **Padrões Adicionais:**
 - **Herança**: Usuario como classe base para Aluno e Profissional
 - **Composição**: AvaliacaoFisica composta por Circunferencias e ComposicaoCorporal
-- **Validação**: Classes utilitárias para validação e cálculo
-- **Separação de Responsabilidades**: Cada classe tem uma responsabilidade específica
+- **Service Layer**: Serviços especializados para cálculos e validações
+- **Dependency Injection**: Controllers utilizam Services para operações específicas
+- **Single Responsibility**: Cada classe tem uma única responsabilidade bem definida
+
+### **Benefícios da Arquitetura MVC:**
+- **Manutenibilidade**: Código organizado e fácil de manter
+- **Testabilidade**: Cada camada pode ser testada independentemente
+- **Escalabilidade**: Fácil adição de novas funcionalidades
+- **Reutilização**: Services podem ser reutilizados por diferentes Controllers
+- **Flexibilidade**: Views podem ser alteradas sem afetar a lógica de negócio
