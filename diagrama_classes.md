@@ -4,7 +4,9 @@
 
 ```mermaid
 classDiagram
-    %% ===== CAMADA MODEL (MODELOS) =====
+    %% ===== CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS) =====
+    
+    %% Entidades Principais
     class AvaliacaoFisica {
         +int id
         +int alunoId
@@ -68,6 +70,36 @@ classDiagram
         +Map~String, Float~ variacoesPercentuais
     }
 
+    %% Serviços e Utilitários (Parte da Camada Model)
+    class AvaliacaoService {
+        +calcularIMC()
+        +classificarPercentualGordura()
+        +validarMedidas()
+        +calcularVariacoes()
+    }
+
+    class RelatorioService {
+        +gerarPDF()
+        +compararAvaliacoes()
+        +calcularEstatisticas()
+        +formatarDados()
+    }
+
+    class ValidadorService {
+        +validarCircunferencias()
+        +validarComposicaoCorporal()
+        +validarPeso()
+        +validarAltura()
+        +validarPercentualGordura()
+    }
+
+    class CalculadoraService {
+        +calcularIMC(peso, altura)
+        +classificarIMC(imc)
+        +getFaixasIMC()
+        +classificarPorGeneroIdade()
+    }
+
     %% ===== CAMADA CONTROLLER (CONTROLADORES) =====
     class AvaliacaoController {
         +registrarAvaliacao()
@@ -108,36 +140,6 @@ classDiagram
         +exibirMenuNavegacao()
     }
 
-    %% ===== SERVIÇOS E UTILITÁRIOS =====
-    class AvaliacaoService {
-        +calcularIMC()
-        +classificarPercentualGordura()
-        +validarMedidas()
-        +calcularVariacoes()
-    }
-
-    class RelatorioService {
-        +gerarPDF()
-        +compararAvaliacoes()
-        +calcularEstatisticas()
-        +formatarDados()
-    }
-
-    class ValidadorService {
-        +validarCircunferencias()
-        +validarComposicaoCorporal()
-        +validarPeso()
-        +validarAltura()
-        +validarPercentualGordura()
-    }
-
-    class CalculadoraService {
-        +calcularIMC(peso, altura)
-        +classificarIMC(imc)
-        +getFaixasIMC()
-        +classificarPorGeneroIdade()
-    }
-
     %% ===== RELACIONAMENTOS MVC =====
     
     %% Relacionamentos Model (Entidades)
@@ -149,33 +151,36 @@ classDiagram
     ComparacaoMedidas --> AvaliacaoFisica : compara atual
     ComparacaoMedidas --> AvaliacaoFisica : compara anterior
     
-    %% Relacionamentos Controller -> Model
-    AvaliacaoController --> AvaliacaoFisica : gerencia
-    AvaliacaoController --> Circunferencias : manipula
-    AvaliacaoController --> ComposicaoCorporal : manipula
-    
-    RelatorioController --> RelatorioEvolucao : gerencia
-    RelatorioController --> ComparacaoMedidas : manipula
-    
-    %% Relacionamentos Controller -> Service
-    AvaliacaoController --> AvaliacaoService : utiliza
-    RelatorioController --> RelatorioService : utiliza
-    AvaliacaoController --> ValidadorService : utiliza
-    AvaliacaoController --> CalculadoraService : utiliza
-    
-    %% Relacionamentos View -> Controller
-    AvaliacaoView --> AvaliacaoController : comunica
-    RelatorioView --> RelatorioController : comunica
-    DashboardView --> AvaliacaoController : comunica
-    DashboardView --> RelatorioController : comunica
-    
-    %% Relacionamentos Service -> Model
+    %% Relacionamentos Service -> Model (Entidades)
     AvaliacaoService ..> AvaliacaoFisica : processa
     AvaliacaoService ..> ComposicaoCorporal : calcula
     RelatorioService ..> RelatorioEvolucao : gera
     ValidadorService ..> Circunferencias : valida
     ValidadorService ..> ComposicaoCorporal : valida
     CalculadoraService ..> ComposicaoCorporal : calcula
+    
+    %% Relacionamentos Service -> Service
+    AvaliacaoService --> ValidadorService : utiliza
+    AvaliacaoService --> CalculadoraService : utiliza
+    RelatorioService --> CalculadoraService : utiliza
+    
+    %% Relacionamentos Controller -> Model (Entidades + Services)
+    AvaliacaoController --> AvaliacaoFisica : gerencia
+    AvaliacaoController --> Circunferencias : manipula
+    AvaliacaoController --> ComposicaoCorporal : manipula
+    AvaliacaoController --> AvaliacaoService : utiliza
+    AvaliacaoController --> ValidadorService : utiliza
+    AvaliacaoController --> CalculadoraService : utiliza
+    
+    RelatorioController --> RelatorioEvolucao : gerencia
+    RelatorioController --> ComparacaoMedidas : manipula
+    RelatorioController --> RelatorioService : utiliza
+    
+    %% Relacionamentos View -> Controller
+    AvaliacaoView --> AvaliacaoController : comunica
+    RelatorioView --> RelatorioController : comunica
+    DashboardView --> AvaliacaoController : comunica
+    DashboardView --> RelatorioController : comunica
 
     %% Notas e Observações
     note for AvaliacaoFisica "Campos opcionais permitidos<br/>Observações até 1000 caracteres<br/>Status: completa/parcial"
@@ -189,8 +194,8 @@ classDiagram
 
 ## Arquitetura MVC - Descrição das Camadas
 
-### **CAMADA MODEL (MODELOS)**
-Representa os dados e a lógica de negócio do sistema.
+### **CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS)**
+Representa os dados, lógica de negócio e serviços do sistema.
 
 #### **Entidades Principais:**
 - **AvaliacaoFisica**: Entidade central que contém todas as medidas de uma avaliação
@@ -198,6 +203,12 @@ Representa os dados e a lógica de negócio do sistema.
 - **ComposicaoCorporal**: Armazena dados de peso, altura e composição corporal
 - **RelatorioEvolucao**: Representa relatórios gerados
 - **ComparacaoMedidas**: Armazena comparações entre avaliações
+
+#### **Serviços e Utilitários (Parte da Camada Model):**
+- **AvaliacaoService**: Cálculos e validações de avaliação
+- **RelatorioService**: Geração e formatação de relatórios
+- **ValidadorService**: Validações de dados
+- **CalculadoraService**: Cálculos matemáticos e classificações
 
 ### **CAMADA CONTROLLER (CONTROLADORES)**
 Gerencia a lógica de controle e coordenação entre Model e View.
@@ -214,15 +225,6 @@ Responsável pela apresentação dos dados ao usuário.
 - **RelatorioView**: Interface para visualização de relatórios
 - **DashboardView**: Interface principal do sistema
 
-### **SERVIÇOS E UTILITÁRIOS**
-Classes de apoio que fornecem funcionalidades específicas.
-
-#### **Serviços:**
-- **AvaliacaoService**: Cálculos e validações de avaliação
-- **RelatorioService**: Geração e formatação de relatórios
-- **ValidadorService**: Validações de dados
-- **CalculadoraService**: Cálculos matemáticos e classificações
-
 ## Funcionalidades Implementadas
 
 ✅ **US10**: Registro de circunferências corporais (AC1-AC3)
@@ -238,6 +240,19 @@ Classes de apoio que fornecem funcionalidades específicas.
 
 ### **Padrão MVC (Model-View-Controller)**
 - **Separação de Responsabilidades**: Cada camada tem uma responsabilidade específica
-- **Model**: Gerencia dados e lógica de negócio
+- **Model**: Gerencia dados, lógica de negócio e serviços
 - **View**: Responsável pela apresentação e interface do usuário
 - **Controller**: Coordena a comunicação entre Model e View
+
+### **Padrões Adicionais:**
+- **Composição**: AvaliacaoFisica composta por Circunferencias e ComposicaoCorporal
+- **Service Layer**: Serviços especializados integrados à camada Model
+- **Dependency Injection**: Controllers utilizam Services da camada Model
+- **Single Responsibility**: Cada classe tem uma única responsabilidade bem definida
+
+### **Benefícios da Arquitetura MVC:**
+- **Manutenibilidade**: Código organizado e fácil de manter
+- **Testabilidade**: Cada camada pode ser testada independentemente
+- **Escalabilidade**: Fácil adição de novas funcionalidades
+- **Reutilização**: Services podem ser reutilizados por diferentes Controllers
+- **Flexibilidade**: Views podem ser alteradas sem afetar a lógica de negócio
