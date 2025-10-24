@@ -233,8 +233,6 @@ classDiagram
 
 ### 🗂️ **DADOS (Model)**
 São como "gavetas" onde guardamos as informações:
-
-- **Aluno**: Representa um aluno do sistema (nome, email, telefone, etc.) - **CLASSE VERMELHA**
 - **AvaliacaoFisica**: Guarda informações básicas (aluno, data, observações)
 - **MedidasCorporais**: Guarda todas as medidas do corpo (peso, altura, cintura, etc.)
 - **Relatorio**: Guarda informações dos relatórios gerados
@@ -272,13 +270,6 @@ São as telas que o usuário vê e usa:
 11. **TelaRelatorio** solicita relatório ao **SistemaController**
 12. **SistemaController** gera relatório baseado nos dados salvos do **Aluno**
 
-## 🔴 Classe Aluno - Destaque Especial
-
-### **📋 Características da Classe Aluno:**
-- **Cor**: Vermelha (destaque visual no diagrama)
-- **Função**: Representa um aluno do sistema
-- **Atributos**: ID, nome, email, data de nascimento, telefone, status ativo
-- **Métodos**: Getters e setters para todos os atributos
 
 ### **🔗 Relacionamentos da Classe Aluno:**
 
@@ -306,118 +297,6 @@ São as telas que o usuário vê e usa:
   - Operações CRUD (criar, buscar, atualizar, excluir)
   - Relacionamento de controle
 
-### **🎯 Por que a Classe Aluno é Vermelha?**
-- ✅ **Destaque Visual**: Facilita identificação no diagrama
-- ✅ **Importância**: Classe central do sistema
-- ✅ **Referência**: Fácil localização em discussões
-- ✅ **Organização**: Separação visual das outras classes
-
-### **💡 Benefícios da Classe Aluno:**
-- ✅ **Centralização**: Todos os dados do aluno em um local
-- ✅ **Reutilização**: Pode ser usada em diferentes contextos
-- ✅ **Integridade**: Dados consistentes e validados
-- ✅ **Escalabilidade**: Fácil adicionar novos atributos
-
-## 🔧 Análise e Correção dos Relacionamentos UML
-
-### **❌ Problemas Identificados e Corrigidos:**
-
-#### **1. AGREGAÇÃO vs ASSOCIAÇÃO - SistemaController**
-- **❌ Problema**: `SistemaController o-- CalculadoraIMC` com "(contém)"
-- **✅ Correção**: `SistemaController o-- CalculadoraIMC` com "(usa)"
-- **Justificativa**: Services podem existir independentemente do Controller
-
-#### **2. COMPOSIÇÃO - AvaliacaoFisica e MedidasCorporais**
-- **✅ Correto**: `AvaliacaoFisica *-- MedidasCorporais`
-- **Justificativa**: MedidasCorporais não pode existir sem AvaliacaoFisica
-
-#### **3. ASSOCIAÇÃO - Aluno e AvaliacaoFisica**
-- **✅ Correto**: `Aluno --> AvaliacaoFisica`
-- **Justificativa**: Aluno pode existir sem avaliações
-
-#### **4. AGREGAÇÃO - AvaliacaoFisica e Aluno**
-- **✅ Correto**: `AvaliacaoFisica o-- Aluno`
-- **Justificativa**: AvaliacaoFisica contém uma instância de Aluno
-
-#### **5. AGREGAÇÃO - Relatorio e Aluno**
-- **✅ Correto**: `Relatorio o-- Aluno`
-- **Justificativa**: Relatorio contém uma instância de Aluno
-
-#### **6. ASSOCIAÇÃO - AvaliacaoFisica e Relatorio**
-- **✅ Correto**: `AvaliacaoFisica --> Relatorio`
-- **Justificativa**: Relatorio pode existir independentemente
-
-### **🎯 Regras UML Aplicadas:**
-
-#### **COMPOSIÇÃO (*--)**
-- **Critério**: "É composto por" - dependência forte
-- **Características**:
-  - Mesma vida útil
-  - Não pode existir independentemente
-  - Exemplo: AvaliacaoFisica *-- MedidasCorporais
-
-#### **AGREGAÇÃO (o--)**
-- **Critério**: "Contém" ou "Usa" - dependência média
-- **Características**:
-  - Vida útil independente
-  - Pode existir separadamente
-  - Exemplo: SistemaController o-- CalculadoraIMC
-
-#### **ASSOCIAÇÃO (-->)**
-- **Critério**: "Relaciona-se com" - dependência fraca
-- **Características**:
-  - Relacionamento temporário
-  - Independência total
-  - Exemplo: Aluno --> AvaliacaoFisica
-
-#### **DEPENDÊNCIA (..>)**
-- **Critério**: "Usa temporariamente" - dependência muito fraca
-- **Características**:
-  - Uso momentâneo
-  - Não possui o objeto
-  - Exemplo: CalculadoraIMC ..> MedidasCorporais
-
-### **💡 Benefícios das Correções:**
-- ✅ **Precisão**: Relacionamentos refletem a realidade do sistema
-- ✅ **Clareza**: Fácil entender dependências entre classes
-- ✅ **Manutenibilidade**: Mudanças não quebram relacionamentos incorretos
-- ✅ **Padrão UML**: Segue convenções estabelecidas
-
-## 📊 Cardinalidades dos Relacionamentos
-
-### **🔢 O que são Cardinalidades?**
-As cardinalidades especificam quantos objetos de cada classe podem estar relacionados:
-
-- **"1"**: Exatamente um objeto
-- **"0..1"**: Zero ou um objeto (opcional)
-- **"0..*"**: Zero ou muitos objetos (opcional, múltiplos)
-- **"1..*"**: Um ou muitos objetos (obrigatório, múltiplos)
-- **"*"**: Muitos objetos (múltiplos)
-
-### **📋 Cardinalidades Implementadas:**
-Cardinalidades
-#### **COMPOSIÇÃO com Cardinalidade**
-- **`AvaliacaoFisica "1" *-- "1" MedidasCorporais`**
-  - **Significado**: Uma avaliação física tem exatamente uma medida corporal
-  - **Cardinalidade**: 1:1 (um para um)
-
-#### **AGREGAÇÃO com Cardinalidade**
-- **`SistemaController "1" o-- "1" CalculadoraIMC`**
-  - **Significado**: Um controller usa exatamente uma calculadora
-  - **Cardinalidade**: 1:1 (um para um)
-
-- **`SistemaController "1" o-- "1" ValidadorDados`**
-  - **Significado**: Um controller usa exatamente um validador
-  - **Cardinalidade**: 1:1 (um para um)
-
-#### **AGREGAÇÃO com Cardinalidade**
-- **`AvaliacaoFisica "1" o-- "1" Aluno`**
-  - **Significado**: Uma avaliação física contém uma instância de aluno
-  - **Cardinalidade**: 1:1 (um para um)
-
-- **`Relatorio "1" o-- "1" Aluno`**
-  - **Significado**: Um relatório contém uma instância de aluno
-  - **Cardinalidade**: 1:1 (um para um)
 
 #### **ASSOCIAÇÃO com Cardinalidade**
 - **`AvaliacaoFisica "1" --> "0..*" Relatorio`**
