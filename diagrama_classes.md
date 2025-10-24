@@ -30,24 +30,7 @@ classDiagram
     }
 
     class Aluno {
-        -int id
-        -String nome
-        -String email
-        -Date dataNascimento
-        -String telefone
-        -boolean ativo
-        +getId()
-        +getNome()
-        +getEmail()
-        +getDataNascimento()
-        +getTelefone()
-        +isAtivo()
-        +setId(id)
-        +setNome(nome)
-        +setEmail(email)
-        +setDataNascimento(data)
-        +setTelefone(telefone)
-        +setAtivo(ativo)
+             
     }
     
     %% Aplicar estilo vermelho à classe Aluno
