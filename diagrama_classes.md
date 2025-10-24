@@ -270,77 +270,75 @@ São as telas que o usuário vê e usa:
 11. **TelaRelatorio** solicita relatório ao **SistemaController**
 12. **SistemaController** gera relatório baseado nos dados salvos do **Aluno**
 
+## 📊 Tabela de Relacionamentos de Classes e Cardinalidades
 
-### **🔗 Relacionamentos da Classe Aluno:**
+### **Resumo Completo dos Relacionamentos**
 
-#### **ASSOCIAÇÃO**: `Aluno --> AvaliacaoFisica`
-- **Significado**: Um aluno POSSUI avaliações físicas
-- **Tipo**: Relacionamento um-para-muitos (1:N)
-- **Características**:
-  - Um aluno pode ter várias avaliações
-  - Uma avaliação pertence a um único aluno
-  - Relacionamento independente
+| Classe Origem | Relacionamento | Classe Destino | Cardinalidade | Tipo | Descrição |
+|---------------|----------------|----------------|---------------|------|-----------|
+| **AvaliacaoFisica** | `*--` | **MedidasCorporais** | 1:1 | COMPOSIÇÃO | Uma avaliação É COMPOSTA POR uma medida corporal |
+| **AvaliacaoFisica** | `o--` | **Aluno** | 1:1 | AGREGAÇÃO | Uma avaliação CONTÉM um aluno |
+| **AvaliacaoFisica** | `-->` | **Relatorio** | 1:N | ASSOCIAÇÃO | Uma avaliação GERA zero ou muitos relatórios |
+| **Relatorio** | `o--` | **Aluno** | 1:1 | AGREGAÇÃO | Um relatório CONTÉM um aluno |
+| **SistemaController** | `o--` | **CalculadoraIMC** | 1:1 | AGREGAÇÃO | Um controller USA uma calculadora |
+| **SistemaController** | `o--` | **ValidadorDados** | 1:1 | AGREGAÇÃO | Um controller USA um validador |
+| **SistemaController** | `-->` | **AvaliacaoFisica** | 1:N | ASSOCIAÇÃO | Um controller GERENCIA zero ou muitas avaliações |
+| **SistemaController** | `-->` | **MedidasCorporais** | 1:N | ASSOCIAÇÃO | Um controller MANIPULA zero ou muitas medidas |
+| **SistemaController** | `-->` | **Relatorio** | 1:N | ASSOCIAÇÃO | Um controller GERENCIA zero ou muitos relatórios |
+| **SistemaController** | `-->` | **Aluno** | 1:N | ASSOCIAÇÃO | Um controller GERENCIA zero ou muitos alunos |
+| **TelaAvaliacao** | `-->` | **SistemaController** | 1:1 | ASSOCIAÇÃO | Uma tela COMUNICA com um controller |
+| **TelaRelatorio** | `-->` | **SistemaController** | 1:1 | ASSOCIAÇÃO | Uma tela COMUNICA com um controller |
+| **TelaPrincipal** | `-->` | **SistemaController** | 1:1 | ASSOCIAÇÃO | Uma tela COMUNICA com um controller |
+| **CalculadoraIMC** | `..>` | **MedidasCorporais** | 1:N | DEPENDÊNCIA | Uma calculadora CALCULA zero ou muitas medidas |
+| **ValidadorDados** | `..>` | **MedidasCorporais** | 1:N | DEPENDÊNCIA | Um validador VALIDA zero ou muitas medidas |
 
-#### **ASSOCIAÇÃO**: `Aluno --> Relatorio`
-- **Significado**: Um aluno RECEBE relatórios
-- **Tipo**: Relacionamento um-para-muitos (1:N)
-- **Características**:
-  - Um aluno pode receber vários relatórios
-  - Um relatório é gerado para um aluno específico
-  - Relacionamento independente
+### **Legenda dos Símbolos UML**
 
-#### **ASSOCIAÇÃO**: `SistemaController --> Aluno`
-- **Significado**: O controller GERENCIA os alunos
-- **Tipo**: Relacionamento um-para-muitos (1:N)
-- **Características**:
-  - O controller pode gerenciar vários alunos
-  - Operações CRUD (criar, buscar, atualizar, excluir)
-  - Relacionamento de controle
+| Símbolo | Nome | Descrição | Força da Dependência |
+|---------|------|-----------|---------------------|
+| `*--` | **Composição** | "É composto por" - dependência forte | 🔴 **Forte** |
+| `o--` | **Agregação** | "Contém" ou "Usa" - dependência média | 🟡 **Média** |
+| `-->` | **Associação** | "Relaciona-se com" - dependência fraca | 🟢 **Fraca** |
+| `..>` | **Dependência** | "Usa temporariamente" - dependência muito fraca | ⚪ **Muito Fraca** |
 
+### **Tipos de Cardinalidades**
 
-#### **ASSOCIAÇÃO com Cardinalidade**
-- **`AvaliacaoFisica "1" --> "0..*" Relatorio`**
-  - **Significado**: Uma avaliação pode gerar zero ou muitos relatórios
-  - **Cardinalidade**: 1:N (um para muitos)
+| Cardinalidade | Símbolo | Descrição | Exemplo |
+|---------------|---------|-----------|---------|
+| **Um para Um** | 1:1 | Exatamente um objeto | AvaliacaoFisica ↔ MedidasCorporais |
+| **Um para Muitos** | 1:N | Um objeto para zero ou muitos | Aluno ↔ AvaliacaoFisica |
+| **Muitos para Muitos** | N:M | Muitos objetos para muitos | (Não aplicável no sistema atual) |
 
-- **`SistemaController "1" --> "0..*" Aluno`**
-  - **Significado**: Um controller gerencia zero ou muitos alunos
-  - **Cardinalidade**: 1:N (um para muitos)
+### **Resumo por Tipo de Relacionamento**
 
-#### **VIEW com Cardinalidade**
-- **`TelaAvaliacao "1" --> "1" SistemaController`**
-  - **Significado**: Uma tela comunica com exatamente um controller
-  - **Cardinalidade**: 1:1 (um para um)
+#### **🔴 COMPOSIÇÃO (1 relacionamento)**
+- `AvaliacaoFisica *-- MedidasCorporais` (1:1)
 
-#### **DEPENDÊNCIA com Cardinalidade**
-- **`CalculadoraIMC "1" ..> "0..*" MedidasCorporais`**
-  - **Significado**: Uma calculadora pode calcular zero ou muitas medidas
-  - **Cardinalidade**: 1:N (um para muitos)
+#### **🟡 AGREGAÇÃO (4 relacionamentos)**
+- `AvaliacaoFisica o-- Aluno` (1:1)
+- `Relatorio o-- Aluno` (1:1)
+- `SistemaController o-- CalculadoraIMC` (1:1)
+- `SistemaController o-- ValidadorDados` (1:1)
 
-### **🎯 Benefícios das Cardinalidades:**
-- ✅ **Precisão**: Define exatamente quantos objetos podem se relacionar
-- ✅ **Validação**: Facilita validação de dados no sistema
-- ✅ **Documentação**: Torna o diagrama mais claro e completo
-- ✅ **Implementação**: Guia o desenvolvimento do código
+#### **🟢 ASSOCIAÇÃO (8 relacionamentos)**
+- `AvaliacaoFisica --> Relatorio` (1:N)
+- `SistemaController --> AvaliacaoFisica` (1:N)
+- `SistemaController --> MedidasCorporais` (1:N)
+- `SistemaController --> Relatorio` (1:N)
+- `SistemaController --> Aluno` (1:N)
+- `TelaAvaliacao --> SistemaController` (1:1)
+- `TelaRelatorio --> SistemaController` (1:1)
+- `TelaPrincipal --> SistemaController` (1:1)
 
-### 💻 **No Nosso Sistema**
+#### **⚪ DEPENDÊNCIA (2 relacionamentos)**
+- `CalculadoraIMC ..> MedidasCorporais` (1:N)
+- `ValidadorDados ..> MedidasCorporais` (1:N)
 
-#### **COMPOSIÇÃO**: `AvaliacaoFisica *-- MedidasCorporais`
-- Uma avaliação física É COMPOSTA POR medidas corporais
-- Se excluir a avaliação, as medidas também são excluídas
-- As medidas não existem sem a avaliação
+### **📈 Estatísticas do Sistema**
+- **Total de Relacionamentos**: 15
+- **Classes Envolvidas**: 8
+- **Composições**: 1 (6.7%)
+- **Agregações**: 4 (26.7%)
+- **Associações**: 8 (53.3%)
+- **Dependências**: 2 (13.3%)
 
-#### **AGREGAÇÃO**: `SistemaController o-- CalculadoraIMC`
-- O SistemaController CONTÉM a CalculadoraIMC
-- Se excluir o SistemaController, a CalculadoraIMC pode ser reutilizada
-- A CalculadoraIMC pode existir independentemente
-
-#### **ASSOCIAÇÃO**: `SistemaController --> AvaliacaoFisica`
-- O controller GERENCIA as avaliações
-- Controller e avaliação podem existir independentemente
-- O controller pode gerenciar outras coisas também
-
-#### **DEPENDÊNCIA**: `CalculadoraIMC ..> MedidasCorporais`
-- A calculadora DEPENDE das medidas para calcular o IMC
-- É um relacionamento temporário durante o cálculo
-- A calculadora não possui as medidas, apenas as usa
