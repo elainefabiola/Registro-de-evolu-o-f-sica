@@ -8,6 +8,9 @@ classDiagram
     %% ===== DADOS (MODEL) =====
     %% Aqui ficam as informações que o sistema guarda
     
+    %% Estilo para classe Aluno (cor vermelha)
+    classDef alunoClass fill:#ff6b6b,stroke:#d63031,stroke-width:2px,color:#fff
+    
     class AvaliacaoFisica {
         -int id
         -Aluno nomeAluno
@@ -25,6 +28,30 @@ classDiagram
         +setObservacoes(obs)
         +setCompleta(completa)
     }
+
+    class Aluno {
+        -int id
+        -String nome
+        -String email
+        -Date dataNascimento
+        -String telefone
+        -boolean ativo
+        +getId()
+        +getNome()
+        +getEmail()
+        +getDataNascimento()
+        +getTelefone()
+        +isAtivo()
+        +setId(id)
+        +setNome(nome)
+        +setEmail(email)
+        +setDataNascimento(data)
+        +setTelefone(telefone)
+        +setAtivo(ativo)
+    }
+    
+    %% Aplicar estilo vermelho à classe Aluno
+    class Aluno alunoClass
  
 
     class MedidasCorporais {
@@ -163,10 +190,15 @@ classDiagram
     %% Uma AvaliacaoFisica está ASSOCIADA a Relatorios
     AvaliacaoFisica --> Relatorio : "associação<br/>(gera)"
     
+    %% Relacionamentos Aluno (Associações)
+    Aluno --> AvaliacaoFisica : "associação<br/>(possui)"
+    Aluno --> Relatorio : "associação<br/>(recebe)"
+    
     %% Relacionamentos Controller -> Model (Associações)
     SistemaController --> AvaliacaoFisica : "associação<br/>(gerencia)"
     SistemaController --> MedidasCorporais : "associação<br/>(manipula)"
     SistemaController --> Relatorio : "associação<br/>(gerencia)"
+    SistemaController --> Aluno : "associação<br/>(gerencia)"
     
     %% Relacionamentos View -> Controller (Associações)
     TelaAvaliacao --> SistemaController : "associação<br/>(comunica)"
@@ -178,6 +210,8 @@ classDiagram
     ValidadorDados ..> MedidasCorporais : "dependência<br/>(valida)"
 
     %% Notas explicativas
+    note for Aluno "Representa um aluno<br/>do sistema (COR VERMELHA)"
+    
     note for AvaliacaoFisica "Armazena informações<br/>básicas da avaliação"
     
     note for MedidasCorporais "Guarda todas as<br/>medidas do corpo"
@@ -194,7 +228,8 @@ classDiagram
 ### 🗂️ **DADOS (Model)**
 São como "gavetas" onde guardamos as informações:
 
-- **AvaliacaoFisica**: Guarda informações básicas (nome do aluno, data, observações)
+- **Aluno**: Representa um aluno do sistema (nome, email, telefone, etc.) - **CLASSE VERMELHA**
+- **AvaliacaoFisica**: Guarda informações básicas (aluno, data, observações)
 - **MedidasCorporais**: Guarda todas as medidas do corpo (peso, altura, cintura, etc.)
 - **Relatorio**: Guarda informações dos relatórios gerados
 
@@ -221,14 +256,61 @@ São as telas que o usuário vê e usa:
 1. **Usuário** acessa o sistema através da **TelaPrincipal**
 2. **TelaPrincipal** comunica com o **SistemaController** para autenticação
 3. **SistemaController** valida permissões e coordena acesso
-4. **Usuário** preenche dados na **TelaAvaliacao**
-5. **TelaAvaliacao** envia dados para o **SistemaController**
-6. **SistemaController** pede para o **ValidadorDados** verificar se está tudo certo
-7. **SistemaController** pede para o **CalculadoraIMC** calcular o IMC
-8. **SistemaController** salva os dados na **AvaliacaoFisica** e **MedidasCorporais**
-9. **SistemaController** avisa a **TelaAvaliacao** que deu tudo certo
-10. **TelaRelatorio** solicita relatório ao **SistemaController**
-11. **SistemaController** gera relatório baseado nos dados salvos
+4. **SistemaController** busca dados do **Aluno** (classe vermelha) no sistema
+5. **Usuário** preenche dados na **TelaAvaliacao**
+6. **TelaAvaliacao** envia dados para o **SistemaController**
+7. **SistemaController** pede para o **ValidadorDados** verificar se está tudo certo
+8. **SistemaController** pede para o **CalculadoraIMC** calcular o IMC
+9. **SistemaController** salva os dados na **AvaliacaoFisica** e **MedidasCorporais**
+10. **SistemaController** avisa a **TelaAvaliacao** que deu tudo certo
+11. **TelaRelatorio** solicita relatório ao **SistemaController**
+12. **SistemaController** gera relatório baseado nos dados salvos do **Aluno**
+
+## 🔴 Classe Aluno - Destaque Especial
+
+### **📋 Características da Classe Aluno:**
+- **Cor**: Vermelha (destaque visual no diagrama)
+- **Função**: Representa um aluno do sistema
+- **Atributos**: ID, nome, email, data de nascimento, telefone, status ativo
+- **Métodos**: Getters e setters para todos os atributos
+
+### **🔗 Relacionamentos da Classe Aluno:**
+
+#### **ASSOCIAÇÃO**: `Aluno --> AvaliacaoFisica`
+- **Significado**: Um aluno POSSUI avaliações físicas
+- **Tipo**: Relacionamento um-para-muitos (1:N)
+- **Características**:
+  - Um aluno pode ter várias avaliações
+  - Uma avaliação pertence a um único aluno
+  - Relacionamento independente
+
+#### **ASSOCIAÇÃO**: `Aluno --> Relatorio`
+- **Significado**: Um aluno RECEBE relatórios
+- **Tipo**: Relacionamento um-para-muitos (1:N)
+- **Características**:
+  - Um aluno pode receber vários relatórios
+  - Um relatório é gerado para um aluno específico
+  - Relacionamento independente
+
+#### **ASSOCIAÇÃO**: `SistemaController --> Aluno`
+- **Significado**: O controller GERENCIA os alunos
+- **Tipo**: Relacionamento um-para-muitos (1:N)
+- **Características**:
+  - O controller pode gerenciar vários alunos
+  - Operações CRUD (criar, buscar, atualizar, excluir)
+  - Relacionamento de controle
+
+### **🎯 Por que a Classe Aluno é Vermelha?**
+- ✅ **Destaque Visual**: Facilita identificação no diagrama
+- ✅ **Importância**: Classe central do sistema
+- ✅ **Referência**: Fácil localização em discussões
+- ✅ **Organização**: Separação visual das outras classes
+
+### **💡 Benefícios da Classe Aluno:**
+- ✅ **Centralização**: Todos os dados do aluno em um local
+- ✅ **Reutilização**: Pode ser usada em diferentes contextos
+- ✅ **Integridade**: Dados consistentes e validados
+- ✅ **Escalabilidade**: Fácil adicionar novos atributos
 
 ### 💻 **No Nosso Sistema**
 
