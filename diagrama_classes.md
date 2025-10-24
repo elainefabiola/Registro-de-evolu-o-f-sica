@@ -1,4 +1,4 @@
-# Diagrama de Classes - Sistema de Registro de evolucao fisica (Arquitetura MVC)
+# Diagrama de Classes - Módulo Registro de evolucao fisica (Arquitetura MVC)
 
 ## Diagrama de Classes - Arquitetura MVC
 
