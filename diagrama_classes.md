@@ -5,60 +5,8 @@
 
 ```mermaid
 classDiagram
-    %% ===== INTERFACE CRUD =====
-    %% Interface genérica para operações CRUD
-    
-    class ICrud {
-        <<interface>>
-        +create(objeto)
-        +read(id)
-        +update(objeto)
-        +delete(id)
-        +list()
-        +exists(id)
-        +validate(objeto)
-    }
-
-    %% ===== REPOSITÓRIOS (Implementam ICrud) =====
-    %% Classes que implementam operações CRUD
-    
-    class AvaliacaoRepository {
-        -List~AvaliacaoFisica~ avaliacoes
-        +create(avaliacao)
-        +read(id)
-        +update(avaliacao)
-        +delete(id)
-        +list()
-        +exists(id)
-        +validate(avaliacao)
-        +findByAluno(nomeAluno)
-        +findByData(data)
-    }
-
-    class MedidasRepository {
-        -List~MedidasCorporais~ medidas
-        +create(medidas)
-        +read(id)
-        +update(medidas)
-        +delete(id)
-        +list()
-        +exists(id)
-        +validate(medidas)
-        +findByAvaliacao(avaliacaoId)
-    }
-
-    class RelatorioRepository {
-        -List~Relatorio~ relatorios
-        +create(relatorio)
-        +read(id)
-        +update(relatorio)
-        +delete(id)
-        +list()
-        +exists(id)
-        +validate(relatorio)
-        +findByAluno(nomeAluno)
-        +findByData(data)
-    }
+    %% ===== DADOS (MODEL) =====
+    %% Aqui ficam as informações que o sistema guarda
     
     class AvaliacaoFisica {
         -int id
@@ -137,9 +85,6 @@ classDiagram
     %% Aqui ficam as operações principais
     
     class SistemaController {
-        -AvaliacaoRepository avaliacaoRepo
-        -MedidasRepository medidasRepo
-        -RelatorioRepository relatorioRepo
         -CalculadoraIMC calculadoraIMC
         -ValidadorDados validadorDados
         -boolean sistemaInicializado
@@ -154,9 +99,6 @@ classDiagram
         +autenticarUsuario()
         +validarPermissoes()
         +coordenarOperacoes()
-        +getAvaliacaoRepo()
-        +getMedidasRepo()
-        +getRelatorioRepo()
         +getCalculadoraIMC()
         +getValidadorDados()
         +isSistemaInicializado()
@@ -208,36 +150,23 @@ classDiagram
 
     %% ===== RELACIONAMENTOS MVC =====
     
-    %% Relacionamentos de IMPLEMENTAÇÃO (Interface)
-    AvaliacaoRepository ..|> ICrud : "implementa"
-    MedidasRepository ..|> ICrud : "implementa"
-    RelatorioRepository ..|> ICrud : "implementa"
-    
     %% Relacionamentos de COMPOSIÇÃO (Composição - forte dependência)
     %% Uma AvaliacaoFisica É COMPOSTA POR MedidasCorporais
     AvaliacaoFisica *-- MedidasCorporais : "composição<br/>(tem-um)"
     
     %% Relacionamentos de AGREGAÇÃO (Agregação - dependência média)
-    %% Um SistemaController É AGREGADO POR Services e Repositories
+    %% Um SistemaController É AGREGADO POR Services
     SistemaController o-- CalculadoraIMC : "agregação<br/>(contém)"
     SistemaController o-- ValidadorDados : "agregação<br/>(contém)"
-    SistemaController o-- AvaliacaoRepository : "agregação<br/>(contém)"
-    SistemaController o-- MedidasRepository : "agregação<br/>(contém)"
-    SistemaController o-- RelatorioRepository : "agregação<br/>(contém)"
     
     %% Relacionamentos de ASSOCIAÇÃO (Associação - relacionamento fraco)
     %% Uma AvaliacaoFisica está ASSOCIADA a Relatorios
     AvaliacaoFisica --> Relatorio : "associação<br/>(gera)"
     
-    %% Relacionamentos Repository -> Model (Associações)
-    AvaliacaoRepository --> AvaliacaoFisica : "associação<br/>(gerencia)"
-    MedidasRepository --> MedidasCorporais : "associação<br/>(gerencia)"
-    RelatorioRepository --> Relatorio : "associação<br/>(gerencia)"
-    
-    %% Relacionamentos Controller -> Repository (Associações)
-    SistemaController --> AvaliacaoRepository : "associação<br/>(usa)"
-    SistemaController --> MedidasRepository : "associação<br/>(usa)"
-    SistemaController --> RelatorioRepository : "associação<br/>(usa)"
+    %% Relacionamentos Controller -> Model (Associações)
+    SistemaController --> AvaliacaoFisica : "associação<br/>(gerencia)"
+    SistemaController --> MedidasCorporais : "associação<br/>(manipula)"
+    SistemaController --> Relatorio : "associação<br/>(gerencia)"
     
     %% Relacionamentos View -> Controller (Associações)
     TelaAvaliacao --> SistemaController : "associação<br/>(comunica)"
@@ -249,14 +178,6 @@ classDiagram
     ValidadorDados ..> MedidasCorporais : "dependência<br/>(valida)"
 
     %% Notas explicativas
-    note for ICrud "Interface padrão<br/>para operações CRUD"
-    
-    note for AvaliacaoRepository "Gerencia dados<br/>de avaliações"
-    
-    note for MedidasRepository "Gerencia dados<br/>de medidas corporais"
-    
-    note for RelatorioRepository "Gerencia dados<br/>de relatórios"
-    
     note for AvaliacaoFisica "Armazena informações<br/>básicas da avaliação"
     
     note for MedidasCorporais "Guarda todas as<br/>medidas do corpo"
@@ -268,19 +189,7 @@ classDiagram
 
 ## Arquitetura MVC - Descrição das Camadas
 
-### **CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS + REPOSITÓRIOS)**
-
-### 🔧 **INTERFACE CRUD**
-Define o padrão para operações de banco de dados:
-
-- **ICrud**: Interface genérica com métodos padrão (create, read, update, delete, list, exists, validate)
-
-### 🗂️ **REPOSITÓRIOS (Implementam ICrud)**
-São como "bibliotecários" que organizam e gerenciam os dados:
-
-- **AvaliacaoRepository**: Gerencia dados de avaliações físicas
-- **MedidasRepository**: Gerencia dados de medidas corporais  
-- **RelatorioRepository**: Gerencia dados de relatórios
+### **CAMADA MODEL (MODELOS + SERVIÇOS + UTILITÁRIOS)**
 
 ### 🗂️ **DADOS (Model)**
 São como "gavetas" onde guardamos as informações:
@@ -298,7 +207,7 @@ São como "calculadoras inteligentes" que fazem os cálculos:
 ### 🎮 **CONTROLE (Controller)**
 É como um "gerente geral" que coordena tudo:
 
-- **SistemaController**: Controla todo o sistema - usa repositórios para gerenciar dados, coordena operações entre Model e View
+- **SistemaController**: Controla todo o sistema - avaliações, relatórios, autenticação e coordenação geral
 
 ### 🖥️ **INTERFACE (View)**
 São as telas que o usuário vê e usa:
@@ -316,77 +225,10 @@ São as telas que o usuário vê e usa:
 5. **TelaAvaliacao** envia dados para o **SistemaController**
 6. **SistemaController** pede para o **ValidadorDados** verificar se está tudo certo
 7. **SistemaController** pede para o **CalculadoraIMC** calcular o IMC
-8. **SistemaController** usa **AvaliacaoRepository** para salvar dados na **AvaliacaoFisica**
-9. **SistemaController** usa **MedidasRepository** para salvar dados na **MedidasCorporais**
-10. **SistemaController** avisa a **TelaAvaliacao** que deu tudo certo
-11. **TelaRelatorio** solicita relatório ao **SistemaController**
-12. **SistemaController** usa **RelatorioRepository** para gerar relatório baseado nos dados salvos
-
-## 🔧 Interface CRUD - Padrão de Design
-
-### **📋 O que é a Interface ICrud?**
-A interface `ICrud` define um contrato padrão para operações de banco de dados:
-
-```java
-public interface ICrud<T> {
-    T create(T objeto);           // Criar novo registro
-    T read(int id);              // Ler registro por ID
-    T update(T objeto);          // Atualizar registro existente
-    boolean delete(int id);      // Excluir registro por ID
-    List<T> list();             // Listar todos os registros
-    boolean exists(int id);     // Verificar se registro existe
-    boolean validate(T objeto);  // Validar dados antes de salvar
-}
-```
-
-### **🎯 Benefícios da Interface CRUD:**
-
-#### **✅ Padronização**
-- Todos os repositórios seguem o mesmo padrão
-- Métodos com nomes consistentes
-- Comportamento previsível
-
-#### **✅ Reutilização**
-- Interface genérica (`<T>`) funciona com qualquer tipo
-- Código comum pode ser compartilhado
-- Fácil manutenção
-
-#### **✅ Flexibilidade**
-- Fácil trocar implementação (ex: de arquivo para banco)
-- Testes unitários simplificados
-- Injeção de dependência facilitada
-
-### **🏗️ Implementação nos Repositórios:**
-
-#### **AvaliacaoRepository**
-```java
-public class AvaliacaoRepository implements ICrud<AvaliacaoFisica> {
-    // Implementa todos os métodos da interface ICrud
-    // + métodos específicos: findByAluno(), findByData()
-}
-```
-
-#### **MedidasRepository**
-```java
-public class MedidasRepository implements ICrud<MedidasCorporais> {
-    // Implementa todos os métodos da interface ICrud
-    // + métodos específicos: findByAvaliacao()
-}
-```
-
-#### **RelatorioRepository**
-```java
-public class RelatorioRepository implements ICrud<Relatorio> {
-    // Implementa todos os métodos da interface ICrud
-    // + métodos específicos: findByAluno(), findByData()
-}
-```
-
-### **💡 Vantagens desta Arquitetura:**
-- ✅ **Consistência**: Todos os repositórios seguem o mesmo padrão
-- ✅ **Manutenibilidade**: Mudanças na interface afetam todos os repositórios
-- ✅ **Testabilidade**: Fácil criar mocks para testes
-- ✅ **Escalabilidade**: Fácil adicionar novos repositórios
+8. **SistemaController** salva os dados na **AvaliacaoFisica** e **MedidasCorporais**
+9. **SistemaController** avisa a **TelaAvaliacao** que deu tudo certo
+10. **TelaRelatorio** solicita relatório ao **SistemaController**
+11. **SistemaController** gera relatório baseado nos dados salvos
 
 ### 💻 **No Nosso Sistema**
 
