@@ -9,28 +9,60 @@ classDiagram
     %% Aqui ficam as informações que o sistema guarda
     
     class AvaliacaoFisica {
-        +int id
-        +String nomeAluno
-        +Date dataAvaliacao
-        +String observacoes
-        +boolean completa
+        -int id
+        -String nomeAluno
+        -Date dataAvaliacao
+        -String observacoes
+        -boolean completa
+        +getId()
+        +getNomeAluno()
+        +getDataAvaliacao()
+        +getObservacoes()
+        +isCompleta()
+        +setId(id)
+        +setNomeAluno(nome)
+        +setDataAvaliacao(data)
+        +setObservacoes(obs)
+        +setCompleta(completa)
     }
 
     class MedidasCorporais {
-        +int id
-        +float peso
-        +float altura
-        +float cintura
-        +float quadril
-        +float braco
-        +float coxa
+        -int id
+        -float peso
+        -float altura
+        -float cintura
+        -float quadril
+        -float braco
+        -float coxa
+        +getId()
+        +getPeso()
+        +getAltura()
+        +getCintura()
+        +getQuadril()
+        +getBraco()
+        +getCoxa()
+        +setId(id)
+        +setPeso(peso)
+        +setAltura(altura)
+        +setCintura(cintura)
+        +setQuadril(quadril)
+        +setBraco(braco)
+        +setCoxa(coxa)
     }
 
     class Relatorio {
-        +int id
-        +String nomeAluno
-        +Date dataGeracao
-        +String arquivoPDF
+        -int id
+        -String nomeAluno
+        -Date dataGeracao
+        -String arquivoPDF
+        +getId()
+        +getNomeAluno()
+        +getDataGeracao()
+        +getArquivoPDF()
+        +setId(id)
+        +setNomeAluno(nome)
+        +setDataGeracao(data)
+        +setArquivoPDF(arquivo)
     }
 
     %% ===== LÓGICA DE NEGÓCIO (SERVICES) =====
@@ -39,18 +71,26 @@ classDiagram
     class CalculadoraIMC {
         +calcularIMC(peso, altura)
         +classificarIMC(imc)
+        +getFaixasIMC()
+        +validarParametros(peso, altura)
     }
 
     class ValidadorDados {
         +validarPeso(peso)
         +validarAltura(altura)
         +validarMedidas(medidas)
+        +validarFormatoNumerico(valor)
+        +validarFaixaValores(valor, min, max)
     }
 
     %% ===== CONTROLE (CONTROLLER) =====
     %% Aqui ficam as operações principais
     
     class SistemaController {
+        -CalculadoraIMC calculadoraIMC
+        -ValidadorDados validadorDados
+        -boolean sistemaInicializado
+        -String usuarioLogado
         +criarAvaliacao()
         +buscarAvaliacao()
         +atualizarAvaliacao()
@@ -61,27 +101,55 @@ classDiagram
         +autenticarUsuario()
         +validarPermissoes()
         +coordenarOperacoes()
+        +getCalculadoraIMC()
+        +getValidadorDados()
+        +isSistemaInicializado()
+        +getUsuarioLogado()
     }
 
     %% ===== INTERFACE (VIEW) =====
     %% Aqui ficam as telas que o usuário vê
     
     class TelaAvaliacao {
+        -SistemaController controller
+        -boolean formularioVisivel
+        -String mensagemAtual
         +exibirFormulario()
         +exibirDados()
         +exibirMensagem()
+        +ocultarFormulario()
+        +limparCampos()
+        +getController()
+        +isFormularioVisivel()
+        +getMensagemAtual()
     }
 
     class TelaRelatorio {
+        -SistemaController controller
+        -boolean relatorioCarregado
+        -String formatoAtual
         +exibirRelatorio()
         +exibirGraficos()
+        +exportarRelatorio()
+        +atualizarGraficos()
+        +getController()
+        +isRelatorioCarregado()
+        +getFormatoAtual()
     }
 
     class TelaPrincipal {
+        -SistemaController controller
+        -boolean menuAberto
+        -String telaAtual
         +exibirMenu()
         +exibirDashboard()
         +exibirLogin()
         +exibirNavegacao()
+        +fecharMenu()
+        +trocarTela(novaTela)
+        +getController()
+        +isMenuAberto()
+        +getTelaAtual()
     }
 
     %% ===== RELACIONAMENTOS MVC =====
@@ -122,6 +190,40 @@ classDiagram
     
     note for SistemaController "Controla todo o<br/>sistema MVC"
 ```
+
+## Modificadores de Acesso no Diagrama
+
+### 🔒 **Atributos Privados (-)**
+- **Símbolo**: `-` (sinal de menos)
+- **Significado**: Só podem ser acessados dentro da própria classe
+- **Exemplo**: `-int id`, `-String nomeAluno`
+- **Características**:
+  - Encapsulamento de dados
+  - Proteção contra acesso direto
+  - Acesso apenas através de métodos públicos
+
+### 🔓 **Métodos Públicos (+)**
+- **Símbolo**: `+` (sinal de mais)
+- **Significado**: Podem ser acessados de qualquer lugar
+- **Exemplo**: `+getId()`, `+setNome(nome)`
+- **Características**:
+  - Interface pública da classe
+  - Acesso controlado aos dados privados
+  - Métodos getter e setter para atributos
+
+### 📋 **Padrão Getter/Setter**
+- **Getter**: `+getAtributo()` - retorna o valor do atributo
+- **Setter**: `+setAtributo(valor)` - define o valor do atributo
+- **Exemplo**: 
+  - Atributo: `-String nomeAluno`
+  - Getter: `+getNomeAluno()`
+  - Setter: `+setNomeAluno(nome)`
+
+### 💡 **Benefícios do Encapsulamento**
+- ✅ **Segurança**: Dados protegidos contra acesso indevido
+- ✅ **Controle**: Validação antes de modificar dados
+- ✅ **Manutenibilidade**: Mudanças internas não afetam outras classes
+- ✅ **Flexibilidade**: Pode alterar implementação interna sem quebrar o código
 
 ## Arquitetura MVC - Descrição das Camadas
 
