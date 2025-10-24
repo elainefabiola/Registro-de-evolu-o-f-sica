@@ -179,33 +179,39 @@ classDiagram
     
     %% Relacionamentos de COMPOSIÇÃO (Composição - forte dependência)
     %% Uma AvaliacaoFisica É COMPOSTA POR MedidasCorporais
+    %% CORREÇÃO: MedidasCorporais não pode existir sem AvaliacaoFisica
     AvaliacaoFisica *-- MedidasCorporais : "composição<br/>(tem-um)"
     
     %% Relacionamentos de AGREGAÇÃO (Agregação - dependência média)
-    %% Um SistemaController É AGREGADO POR Services
-    SistemaController o-- CalculadoraIMC : "agregação<br/>(contém)"
-    SistemaController o-- ValidadorDados : "agregação<br/>(contém)"
+    %% CORREÇÃO: Services podem existir independentemente do Controller
+    SistemaController o-- CalculadoraIMC : "agregação<br/>(usa)"
+    SistemaController o-- ValidadorDados : "agregação<br/>(usa)"
     
     %% Relacionamentos de ASSOCIAÇÃO (Associação - relacionamento fraco)
-    %% Uma AvaliacaoFisica está ASSOCIADA a Relatorios
+    %% CORREÇÃO: Relatorio pode existir independentemente de AvaliacaoFisica
     AvaliacaoFisica --> Relatorio : "associação<br/>(gera)"
     
     %% Relacionamentos Aluno (Associações)
+    %% CORREÇÃO: Aluno pode existir sem avaliações
     Aluno --> AvaliacaoFisica : "associação<br/>(possui)"
+    %% CORREÇÃO: Aluno pode existir sem relatórios
     Aluno --> Relatorio : "associação<br/>(recebe)"
     
     %% Relacionamentos Controller -> Model (Associações)
+    %% CORREÇÃO: Controller gerencia mas não possui os modelos
     SistemaController --> AvaliacaoFisica : "associação<br/>(gerencia)"
     SistemaController --> MedidasCorporais : "associação<br/>(manipula)"
     SistemaController --> Relatorio : "associação<br/>(gerencia)"
     SistemaController --> Aluno : "associação<br/>(gerencia)"
     
     %% Relacionamentos View -> Controller (Associações)
+    %% CORREÇÃO: Views dependem do Controller para funcionar
     TelaAvaliacao --> SistemaController : "associação<br/>(comunica)"
     TelaRelatorio --> SistemaController : "associação<br/>(comunica)"
     TelaPrincipal --> SistemaController : "associação<br/>(comunica)"
     
     %% Relacionamentos Service -> Model (Dependências)
+    %% CORREÇÃO: Services dependem temporariamente dos modelos
     CalculadoraIMC ..> MedidasCorporais : "dependência<br/>(calcula)"
     ValidadorDados ..> MedidasCorporais : "dependência<br/>(valida)"
 
@@ -311,6 +317,63 @@ São as telas que o usuário vê e usa:
 - ✅ **Reutilização**: Pode ser usada em diferentes contextos
 - ✅ **Integridade**: Dados consistentes e validados
 - ✅ **Escalabilidade**: Fácil adicionar novos atributos
+
+## 🔧 Análise e Correção dos Relacionamentos UML
+
+### **❌ Problemas Identificados e Corrigidos:**
+
+#### **1. AGREGAÇÃO vs ASSOCIAÇÃO - SistemaController**
+- **❌ Problema**: `SistemaController o-- CalculadoraIMC` com "(contém)"
+- **✅ Correção**: `SistemaController o-- CalculadoraIMC` com "(usa)"
+- **Justificativa**: Services podem existir independentemente do Controller
+
+#### **2. COMPOSIÇÃO - AvaliacaoFisica e MedidasCorporais**
+- **✅ Correto**: `AvaliacaoFisica *-- MedidasCorporais`
+- **Justificativa**: MedidasCorporais não pode existir sem AvaliacaoFisica
+
+#### **3. ASSOCIAÇÃO - Aluno e AvaliacaoFisica**
+- **✅ Correto**: `Aluno --> AvaliacaoFisica`
+- **Justificativa**: Aluno pode existir sem avaliações
+
+#### **4. ASSOCIAÇÃO - AvaliacaoFisica e Relatorio**
+- **✅ Correto**: `AvaliacaoFisica --> Relatorio`
+- **Justificativa**: Relatorio pode existir independentemente
+
+### **🎯 Regras UML Aplicadas:**
+
+#### **COMPOSIÇÃO (*--)**
+- **Critério**: "É composto por" - dependência forte
+- **Características**:
+  - Mesma vida útil
+  - Não pode existir independentemente
+  - Exemplo: AvaliacaoFisica *-- MedidasCorporais
+
+#### **AGREGAÇÃO (o--)**
+- **Critério**: "Contém" ou "Usa" - dependência média
+- **Características**:
+  - Vida útil independente
+  - Pode existir separadamente
+  - Exemplo: SistemaController o-- CalculadoraIMC
+
+#### **ASSOCIAÇÃO (-->)**
+- **Critério**: "Relaciona-se com" - dependência fraca
+- **Características**:
+  - Relacionamento temporário
+  - Independência total
+  - Exemplo: Aluno --> AvaliacaoFisica
+
+#### **DEPENDÊNCIA (..>)**
+- **Critério**: "Usa temporariamente" - dependência muito fraca
+- **Características**:
+  - Uso momentâneo
+  - Não possui o objeto
+  - Exemplo: CalculadoraIMC ..> MedidasCorporais
+
+### **💡 Benefícios das Correções:**
+- ✅ **Precisão**: Relacionamentos refletem a realidade do sistema
+- ✅ **Clareza**: Fácil entender dependências entre classes
+- ✅ **Manutenibilidade**: Mudanças não quebram relacionamentos incorretos
+- ✅ **Padrão UML**: Segue convenções estabelecidas
 
 ### 💻 **No Nosso Sistema**
 
