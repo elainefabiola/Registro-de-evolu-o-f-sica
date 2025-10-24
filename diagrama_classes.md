@@ -175,45 +175,45 @@ classDiagram
         +getTelaAtual()
     }
 
-    %% ===== RELACIONAMENTOS MVC =====
+    %% ===== RELACIONAMENTOS MVC COM CARDINALIDADES =====
     
     %% Relacionamentos de COMPOSIÇÃO (Composição - forte dependência)
     %% Uma AvaliacaoFisica É COMPOSTA POR MedidasCorporais
     %% CORREÇÃO: MedidasCorporais não pode existir sem AvaliacaoFisica
-    AvaliacaoFisica *-- MedidasCorporais : "composição<br/>(tem-um)"
+    AvaliacaoFisica "1" *-- "1" MedidasCorporais : "composição<br/>(tem-um)"
     
     %% Relacionamentos de AGREGAÇÃO (Agregação - dependência média)
     %% CORREÇÃO: Services podem existir independentemente do Controller
-    SistemaController o-- CalculadoraIMC : "agregação<br/>(usa)"
-    SistemaController o-- ValidadorDados : "agregação<br/>(usa)"
+    SistemaController "1" o-- "1" CalculadoraIMC : "agregação<br/>(usa)"
+    SistemaController "1" o-- "1" ValidadorDados : "agregação<br/>(usa)"
     
     %% Relacionamentos de ASSOCIAÇÃO (Associação - relacionamento fraco)
     %% CORREÇÃO: Relatorio pode existir independentemente de AvaliacaoFisica
-    AvaliacaoFisica --> Relatorio : "associação<br/>(gera)"
+    AvaliacaoFisica "1" --> "0..*" Relatorio : "associação<br/>(gera)"
     
     %% Relacionamentos Aluno (Associações)
     %% CORREÇÃO: Aluno pode existir sem avaliações
-    Aluno --> AvaliacaoFisica : "associação<br/>(possui)"
+    Aluno "1" --> "0..*" AvaliacaoFisica : "associação<br/>(possui)"
     %% CORREÇÃO: Aluno pode existir sem relatórios
-    Aluno --> Relatorio : "associação<br/>(recebe)"
+    Aluno "1" --> "0..*" Relatorio : "associação<br/>(recebe)"
     
     %% Relacionamentos Controller -> Model (Associações)
     %% CORREÇÃO: Controller gerencia mas não possui os modelos
-    SistemaController --> AvaliacaoFisica : "associação<br/>(gerencia)"
-    SistemaController --> MedidasCorporais : "associação<br/>(manipula)"
-    SistemaController --> Relatorio : "associação<br/>(gerencia)"
-    SistemaController --> Aluno : "associação<br/>(gerencia)"
+    SistemaController "1" --> "0..*" AvaliacaoFisica : "associação<br/>(gerencia)"
+    SistemaController "1" --> "0..*" MedidasCorporais : "associação<br/>(manipula)"
+    SistemaController "1" --> "0..*" Relatorio : "associação<br/>(gerencia)"
+    SistemaController "1" --> "0..*" Aluno : "associação<br/>(gerencia)"
     
     %% Relacionamentos View -> Controller (Associações)
     %% CORREÇÃO: Views dependem do Controller para funcionar
-    TelaAvaliacao --> SistemaController : "associação<br/>(comunica)"
-    TelaRelatorio --> SistemaController : "associação<br/>(comunica)"
-    TelaPrincipal --> SistemaController : "associação<br/>(comunica)"
+    TelaAvaliacao "1" --> "1" SistemaController : "associação<br/>(comunica)"
+    TelaRelatorio "1" --> "1" SistemaController : "associação<br/>(comunica)"
+    TelaPrincipal "1" --> "1" SistemaController : "associação<br/>(comunica)"
     
     %% Relacionamentos Service -> Model (Dependências)
     %% CORREÇÃO: Services dependem temporariamente dos modelos
-    CalculadoraIMC ..> MedidasCorporais : "dependência<br/>(calcula)"
-    ValidadorDados ..> MedidasCorporais : "dependência<br/>(valida)"
+    CalculadoraIMC "1" ..> "0..*" MedidasCorporais : "dependência<br/>(calcula)"
+    ValidadorDados "1" ..> "0..*" MedidasCorporais : "dependência<br/>(valida)"
 
     %% Notas explicativas
     note for Aluno "Representa um aluno<br/>do sistema (COR VERMELHA)"
@@ -374,6 +374,66 @@ São as telas que o usuário vê e usa:
 - ✅ **Clareza**: Fácil entender dependências entre classes
 - ✅ **Manutenibilidade**: Mudanças não quebram relacionamentos incorretos
 - ✅ **Padrão UML**: Segue convenções estabelecidas
+
+## 📊 Cardinalidades dos Relacionamentos
+
+### **🔢 O que são Cardinalidades?**
+As cardinalidades especificam quantos objetos de cada classe podem estar relacionados:
+
+- **"1"**: Exatamente um objeto
+- **"0..1"**: Zero ou um objeto (opcional)
+- **"0..*"**: Zero ou muitos objetos (opcional, múltiplos)
+- **"1..*"**: Um ou muitos objetos (obrigatório, múltiplos)
+- **"*"**: Muitos objetos (múltiplos)
+
+### **📋 Cardinalidades Implementadas:**
+
+#### **COMPOSIÇÃO com Cardinalidade**
+- **`AvaliacaoFisica "1" *-- "1" MedidasCorporais`**
+  - **Significado**: Uma avaliação física tem exatamente uma medida corporal
+  - **Cardinalidade**: 1:1 (um para um)
+
+#### **AGREGAÇÃO com Cardinalidade**
+- **`SistemaController "1" o-- "1" CalculadoraIMC`**
+  - **Significado**: Um controller usa exatamente uma calculadora
+  - **Cardinalidade**: 1:1 (um para um)
+
+- **`SistemaController "1" o-- "1" ValidadorDados`**
+  - **Significado**: Um controller usa exatamente um validador
+  - **Cardinalidade**: 1:1 (um para um)
+
+#### **ASSOCIAÇÃO com Cardinalidade**
+- **`Aluno "1" --> "0..*" AvaliacaoFisica`**
+  - **Significado**: Um aluno pode ter zero ou muitas avaliações
+  - **Cardinalidade**: 1:N (um para muitos)
+
+- **`Aluno "1" --> "0..*" Relatorio`**
+  - **Significado**: Um aluno pode receber zero ou muitos relatórios
+  - **Cardinalidade**: 1:N (um para muitos)
+
+- **`AvaliacaoFisica "1" --> "0..*" Relatorio`**
+  - **Significado**: Uma avaliação pode gerar zero ou muitos relatórios
+  - **Cardinalidade**: 1:N (um para muitos)
+
+- **`SistemaController "1" --> "0..*" Aluno`**
+  - **Significado**: Um controller gerencia zero ou muitos alunos
+  - **Cardinalidade**: 1:N (um para muitos)
+
+#### **VIEW com Cardinalidade**
+- **`TelaAvaliacao "1" --> "1" SistemaController`**
+  - **Significado**: Uma tela comunica com exatamente um controller
+  - **Cardinalidade**: 1:1 (um para um)
+
+#### **DEPENDÊNCIA com Cardinalidade**
+- **`CalculadoraIMC "1" ..> "0..*" MedidasCorporais`**
+  - **Significado**: Uma calculadora pode calcular zero ou muitas medidas
+  - **Cardinalidade**: 1:N (um para muitos)
+
+### **🎯 Benefícios das Cardinalidades:**
+- ✅ **Precisão**: Define exatamente quantos objetos podem se relacionar
+- ✅ **Validação**: Facilita validação de dados no sistema
+- ✅ **Documentação**: Torna o diagrama mais claro e completo
+- ✅ **Implementação**: Guia o desenvolvimento do código
 
 ### 💻 **No Nosso Sistema**
 
