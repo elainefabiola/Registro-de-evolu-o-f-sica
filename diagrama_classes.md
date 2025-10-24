@@ -25,9 +25,7 @@ classDiagram
         +setObservacoes(obs)
         +setCompleta(completa)
     }
-    class Aluno {
-    
-    }
+ 
 
     class MedidasCorporais {
         -int id
