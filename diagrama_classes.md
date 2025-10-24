@@ -13,7 +13,7 @@ classDiagram
     
     class AvaliacaoFisica {
         -int id
-        -Aluno nomeAluno
+        -Aluno Aluno
         -Date dataAvaliacao
         -String observacoes
         -boolean completa
@@ -191,11 +191,11 @@ classDiagram
     %% CORREÇÃO: Relatorio pode existir independentemente de AvaliacaoFisica
     AvaliacaoFisica "1" --> "0..*" Relatorio : "associação<br/>(gera)"
     
-    %% Relacionamentos Aluno (Associações)
-    %% CORREÇÃO: Aluno pode existir sem avaliações
-    Aluno "1" --> "0..*" AvaliacaoFisica : "associação<br/>(possui)"
-    %% CORREÇÃO: Aluno pode existir sem relatórios
-    Aluno "1" --> "0..*" Relatorio : "associação<br/>(recebe)"
+    %% Relacionamentos Aluno (Agregação)
+    %% CORREÇÃO: AvaliacaoFisica CONTÉM uma instância de Aluno
+    AvaliacaoFisica "1" o-- "1" Aluno : "agregação<br/>(contém)"
+    %% CORREÇÃO: Relatorio CONTÉM uma instância de Aluno
+    Relatorio "1" o-- "1" Aluno : "agregação<br/>(contém)"
     
     %% Relacionamentos Controller -> Model (Associações)
     %% CORREÇÃO: Controller gerencia mas não possui os modelos
@@ -335,7 +335,15 @@ São as telas que o usuário vê e usa:
 - **✅ Correto**: `Aluno --> AvaliacaoFisica`
 - **Justificativa**: Aluno pode existir sem avaliações
 
-#### **4. ASSOCIAÇÃO - AvaliacaoFisica e Relatorio**
+#### **4. AGREGAÇÃO - AvaliacaoFisica e Aluno**
+- **✅ Correto**: `AvaliacaoFisica o-- Aluno`
+- **Justificativa**: AvaliacaoFisica contém uma instância de Aluno
+
+#### **5. AGREGAÇÃO - Relatorio e Aluno**
+- **✅ Correto**: `Relatorio o-- Aluno`
+- **Justificativa**: Relatorio contém uma instância de Aluno
+
+#### **6. ASSOCIAÇÃO - AvaliacaoFisica e Relatorio**
 - **✅ Correto**: `AvaliacaoFisica --> Relatorio`
 - **Justificativa**: Relatorio pode existir independentemente
 
@@ -387,7 +395,7 @@ As cardinalidades especificam quantos objetos de cada classe podem estar relacio
 - **"*"**: Muitos objetos (múltiplos)
 
 ### **📋 Cardinalidades Implementadas:**
-
+Cardinalidades
 #### **COMPOSIÇÃO com Cardinalidade**
 - **`AvaliacaoFisica "1" *-- "1" MedidasCorporais`**
   - **Significado**: Uma avaliação física tem exatamente uma medida corporal
@@ -402,15 +410,16 @@ As cardinalidades especificam quantos objetos de cada classe podem estar relacio
   - **Significado**: Um controller usa exatamente um validador
   - **Cardinalidade**: 1:1 (um para um)
 
+#### **AGREGAÇÃO com Cardinalidade**
+- **`AvaliacaoFisica "1" o-- "1" Aluno`**
+  - **Significado**: Uma avaliação física contém uma instância de aluno
+  - **Cardinalidade**: 1:1 (um para um)
+
+- **`Relatorio "1" o-- "1" Aluno`**
+  - **Significado**: Um relatório contém uma instância de aluno
+  - **Cardinalidade**: 1:1 (um para um)
+
 #### **ASSOCIAÇÃO com Cardinalidade**
-- **`Aluno "1" --> "0..*" AvaliacaoFisica`**
-  - **Significado**: Um aluno pode ter zero ou muitas avaliações
-  - **Cardinalidade**: 1:N (um para muitos)
-
-- **`Aluno "1" --> "0..*" Relatorio`**
-  - **Significado**: Um aluno pode receber zero ou muitos relatórios
-  - **Cardinalidade**: 1:N (um para muitos)
-
 - **`AvaliacaoFisica "1" --> "0..*" Relatorio`**
   - **Significado**: Uma avaliação pode gerar zero ou muitos relatórios
   - **Cardinalidade**: 1:N (um para muitos)
