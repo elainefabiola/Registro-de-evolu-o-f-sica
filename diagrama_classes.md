@@ -26,7 +26,7 @@ classDiagram
         +setCompleta(completa)
     }
     class Aluno {
-  
+    
     }
 
     class MedidasCorporais {
