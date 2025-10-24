@@ -33,9 +33,6 @@ classDiagram
              
     }
     
-    %% Aplicar estilo vermelho à classe Aluno
-    class Aluno alunoClass
- 
 
     class MedidasCorporais {
         -int id
