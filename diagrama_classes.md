@@ -10,7 +10,7 @@ classDiagram
     
     class AvaliacaoFisica {
         -int id
-        -String nomeAluno
+        -Aluno nomeAluno
         -Date dataAvaliacao
         -String observacoes
         -boolean completa
@@ -24,6 +24,9 @@ classDiagram
         +setDataAvaliacao(data)
         +setObservacoes(obs)
         +setCompleta(completa)
+    }
+    class Aluno {
+  
     }
 
     class MedidasCorporais {
@@ -52,7 +55,7 @@ classDiagram
 
     class Relatorio {
         -int id
-        -String nomeAluno
+        -Aluno nomeAluno
         -Date dataGeracao
         +getId()
         +getNomeAluno()
