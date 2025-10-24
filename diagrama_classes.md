@@ -216,7 +216,7 @@ classDiagram
     ValidadorDados "1" ..> "0..*" MedidasCorporais : "dependência<br/>(valida)"
 
     %% Notas explicativas
-    note for Aluno "Representa um aluno<br/>do sistema (COR VERMELHA)"
+    note for Aluno "Representa um aluno<br/>do sistema (Não será implemtada)"
     
     note for AvaliacaoFisica "Armazena informações<br/>básicas da avaliação"
     
